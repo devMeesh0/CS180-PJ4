@@ -1,9 +1,45 @@
+import java.util.Scanner;
+
+/**
+ * CS180 PJ 4 
+ * 
+ * Main driver class for the project
+ * 
+ * @author Ameesh Daryani
+ * @version 4/4/2023
+ */
+
+
 public class Website {
-    
+        
     public static void main(String[] args) {
         // TODO: implement method
+        Scanner scan = new Scanner(System.in);
+
+        try {
+            printWelcomeMenu(scan);
+        } catch (InvalidInputException e) {
+            System.out.println(e.getMessage());
+        }
+        
+
+        scan.close();
     }
 
+    public static int printWelcomeMenu(Scanner scan) throws InvalidInputException{
+        
+        System.out.println("Hello and Welcome to the Seller-Customer interface!");
+        System.out.println("Please select an option to begin:");
+        System.out.println("1. Login");
+        System.out.println("2. Create an account");
+        System.out.println("3. Quit");
+        int choice = Integer.parseInt(scan.nextLine());
+        scan.nextLine();
+        
+        if (choice == 1 || choice == 2 || choice == 3) {
+            return choice;
+        } else throw new InvalidInputException("The choice entered was invalid!");
+    }
     public String[] getStores() {
         // TODO: implement method
         return new String[0];
@@ -49,12 +85,7 @@ public class Website {
         return new User();
     }
     
-    public boolean updateConversation(Message message) {
-        
-        return false;
-    }
-
-    
+      
 
 
 }

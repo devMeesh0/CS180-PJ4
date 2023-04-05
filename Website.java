@@ -11,6 +11,8 @@ import java.util.Scanner;
 
 
 public class Website {
+
+    User currentUser;
         
     public static void main(String[] args) {
         // TODO: implement method
@@ -26,7 +28,7 @@ public class Website {
         scan.close();
     }
 
-    public static int printWelcomeMenu(Scanner scan) throws InvalidInputException{
+    public static void printWelcomeMenu(Scanner scan) throws InvalidInputException {
         
         System.out.println("Hello and Welcome to the Seller-Customer interface!");
         System.out.println("Please select an option to begin:");
@@ -37,9 +39,25 @@ public class Website {
         scan.nextLine();
         
         if (choice == 1 || choice == 2 || choice == 3) {
-            return choice;
+            switch (choice) {
+                case 1: {
+                    //TODO: add login method
+                    break;
+                }
+
+                case 2: {
+                    //TODO: add create account method
+                    break;
+                }
+
+                case 3: {
+                    System.out.println("Thanks for using the interface!");
+                    break;
+                }
+            }
         } else throw new InvalidInputException("The choice entered was invalid!");
     }
+    
     public String[] getStores() {
         // TODO: implement method
         return new String[0];
@@ -84,8 +102,4 @@ public class Website {
         
         return new User();
     }
-    
-      
-
-
 }

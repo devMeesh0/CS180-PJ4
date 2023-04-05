@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class Seller extends User{
     public static ArrayList<Store> stores;
     
+     //TODO: create constructor, getters and setters
 
     public Seller() {
 

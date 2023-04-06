@@ -1,10 +1,12 @@
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
 
 public class User {
     
     
     public String username;
     public String password;
+    
     public String name;
     public int numMessages;
     public int phoneNum;
@@ -95,12 +97,26 @@ public class User {
     
     //TODO: add entry in blocked.txt detailing who is blocking who
     public void blockUser(User blocked) {
-        
+        try {
+            File f = new File("blocked.txt");
+            FileWriter fw = new FileWriter(f, true);
+            fw.write(this.username + "," + blocked.getUsername() + "\n");
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     //TODO: add entry in invisible.txt detailing who is being made invisible to who
     public void makeInvisible(User ghost) {
-        
+        try {
+            File f = new File("invisible.txt");
+            FileWriter fw = new FileWriter(f, true);
+            fw.write(this.username + "," + ghost.getUsername() + "\n");
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     

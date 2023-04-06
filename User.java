@@ -1,9 +1,15 @@
 import java.util.*;
 import java.io.*;
+/**
+ * CS180 PJ 4
+ *
+ * User
+ *
+ * @author Jiatong Sun,
+ * @version 4/4/2023
+ */
 
 public class User {
-    
-    
     public String username;
     public String password;
     

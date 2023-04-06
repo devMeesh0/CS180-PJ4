@@ -41,7 +41,14 @@ public class Customer extends User {
             String line = "";
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                Seller seller = new Seller(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]);
+                String userType = part[0];
+                String userName = part[1];
+                String password = part[2];
+                String name = part[3];
+                int numMessages = Integer.parseInt(part[4]);
+                int phoneNum = Integer.parseInt(part[5]);
+                String address = part[6];
+                Seller seller = new Seller(userType, userName, ppassword, name, numMessages, phoneNum, address);
                 sellers.add(seller);
             }
             return sellers; // need to change

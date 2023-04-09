@@ -18,7 +18,7 @@ import java.util.Scanner;
 
 public class Website {
 
-    User currentUser;
+    public static User currentUser;
         
     public static void main(String[] args) {
         // TODO: implement method
@@ -51,15 +51,25 @@ public class Website {
             switch (choice) {
                 case 1: {
                     //TODO: add login method
-                    if (login(scan)); {
+                    boolean success = login(scan);
+                    if (success) {
                         System.out.println("You have successfully logged in!");
-                        
+                        if (currentUser instanceof Customer) {
+                            customerMenu();
+                        }
+                        if (currentUser instanceof Seller) {
+                            sellerMenu();
+                        }
+                    } 
+                    if (!success) {
+                        System.out.println("Goodbye!");
                     }
                     break;
                 }
 
                 case 2: {
                     //TODO: add create account method
+                    createAccount(scan, "user.txt");
                     break;
                 }
 
@@ -122,6 +132,18 @@ public class Website {
     
         System.out.print("Enter your password: ");
         String password = scanner.nextLine();
+
+        String phoneNum;
+        do {
+            System.out.print("Enter your phone number (10 Digit number): ");
+            phoneNum = scanner.nextLine();
+        } while (phoneNum.length() != 10);
+
+        String address;
+        do {
+            System.out.print("Enter your address (no commas): ");
+            address = scanner.nextLine();
+        } while (address.contains(","));
     
         String accountType;
         do {
@@ -130,22 +152,23 @@ public class Website {
         } while (!accountType.equals("seller") && !accountType.equals("customer"));
     
         try (PrintWriter writer = new PrintWriter(new File("user.txt"))) {
-          writer.println(username + "," + name + "," + password + "," + accountType);
+          writer.println(accountType + "," + username + "," + password + "," + name + "," + 0 + "," + phoneNum + "," + address);
           System.out.println("User created! You are now logged in");
         } catch (FileNotFoundException e) {
           System.err.println("Error opening file for writing: " + fileName);
           e.printStackTrace();
         }
 
+
       }
 
-    public void sellerMenu() {
+    public static void sellerMenu() {
         // TODO: implement method
         System.out.println("Welcome Seller " + currentUser.getName() + "!");
         System.out.println("Please Select an action  ");
     }
 
-    public void customerMenu() {
+    public static void customerMenu() {
         // TODO: implement method
     }
 

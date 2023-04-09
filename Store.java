@@ -1,3 +1,5 @@
+import java.io.*;
+
 /**
  * CS180 PJ 4
  *
@@ -7,19 +9,25 @@
  * @version 4/5/2023
  */
 public class Store {
-    public String name;
+    public String ownerUsername;
+    public String storeName;
     public String storeType;
     public String address;
 
     //TODO: create constructor, getters and setters
-    public Store(String name, String storeType, String address) {
-        this.name = name;
+    public Store(String ownerUserName, String storeName, String storeType, String address) {
+        this.ownerUsername = ownerUserName;
+        this.storeName = storeName;
         this.storeType = storeType;
         this.address = address;
     }
 
-    public String getName() {
-        return name;
+    public String getOwnerUsername() {
+        return ownerUsername;
+    }
+
+    public String getStoreName() {
+        return storeName;
     }
 
     public String getStoreType() {
@@ -30,8 +38,12 @@ public class Store {
         return address;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 
     public void setStoreType(String storeType) {
@@ -43,7 +55,16 @@ public class Store {
     }
 
     //TODO: method that takes store and adds it to stores.txt
-    public void publish() {
-
+    public static void publish(String ownerUserName, String storeName, String storeType, String address) {
+        try {
+            File f = new File("stores.txt");
+            FileOutputStream fos = new FileOutputStream(f, true);
+            PrintWriter pw = new PrintWriter(fos);
+            pw.write(ownerUserName + ","+ storeName + "," + storeType + "," + address + "\n");
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 }

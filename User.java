@@ -17,8 +17,9 @@ public class User {
     public int numMessages;
     public int phoneNum;
     public String address;
+    public List<Message>messageHistoryList;
     public User() {
-    
+        messageHistoryList = new ArrayList<>();
     }
     public User(String username, String password, String name, int numMessages, int phoneNum, String address) {
         this.username = username;
@@ -27,8 +28,66 @@ public class User {
         this.numMessages = numMessages;
         this.phoneNum = phoneNum;
         this.address = address;
+
+        // initialize messageHistoryList
+        messageHistoryList = new ArrayList<>();
     }
-    
+    //Getters and Setters
+
+    public List<Message> getMessageHistoryList() {
+        return messageHistoryList;
+    }
+
+    public void setMessageHistoryList(List<Message> messageHistoryList) {
+        this.messageHistoryList = messageHistoryList;
+    }
+
+    //Create a new message
+    public Message createMessage(User reciever, String message,String timestamp) {
+        Message newMessage = new Message(message,this, reciever,timestamp);
+        return newMessage;
+    }
+    public void addMessageToHistory(Message message) {
+        messageHistoryList.add(message);
+    }
+    //Remove a message from the message history
+    public void removeMessageFromHistory( int index) {
+        messageHistoryList.remove(index);
+    }
+    //Retrieve all messages from the message history
+    public List<Message> getAllMessages() {
+        return messageHistoryList;
+    }
+    //Retrieve a specific message from the message history
+
+    public void modifyingMessage(Message message, int index) {
+        messageHistoryList.set(index, message);
+    }
+
+    //Retrieve all messages from the message history for the specified recipient
+    public List<Message> getMessageHistoryByReciever(User reciever) {
+        List<Message> messageHistory = new ArrayList<>();
+        for (Message message : messageHistoryList) {
+            if (message.getReciever().equals(reciever)) {
+                messageHistory.add(message);
+            }
+        }
+        return messageHistory;
+    }
+
+    //Retrieve all messages from the message history for the specified sender
+    public List<Message> getMessageHistoryBySender(User sender) {
+        List<Message> messageHistory = new ArrayList<>();
+        for (Message message : messageHistoryList) {
+            if (message.getSender().equals(sender)) {
+                messageHistory.add(message);
+            }
+        }
+        return messageHistory;
+    }
+
+
+
     public String getUsername() {
         return username;
     }

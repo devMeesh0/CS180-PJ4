@@ -1,5 +1,4 @@
-public class Message {
-    /**
+ /**
      * CS180 PJ 4
      *
      * Message class
@@ -8,12 +7,15 @@ public class Message {
      * @version 4/5/2023
      */
 
+
+public class Message {
+   
     private String messsage;
     private User sender;
     private User reciever;
     private String timestamp;
     private boolean edited;
-    //TODO: method that creates conversation file if need be, then adds message to conversation text file
+    //  method that creates conversation file if need be, then adds message to conversation text file
     public boolean updateConversation(Message mes) {
         this.messsage = mes.messsage;
         this.sender = mes.sender;
@@ -24,7 +26,7 @@ public class Message {
         //return false;
     }
 
-    //TODO: need constructor, gettters and setters for all above variables, implement specific methods marked below
+    //  need constructor, gettters and setters for all above variables, implement specific methods marked below
 
     public Message(String messsage, User sender, User reciever, String timestamp) {
         this.messsage = messsage;

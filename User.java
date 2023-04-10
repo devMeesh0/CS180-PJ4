@@ -17,7 +17,7 @@ public class User {
     public int numMessages;
     public int phoneNum;
     public String address;
-    public List<Message>messageHistoryList;
+    public List<Message> messageHistoryList;
     public User() {
 
     }
@@ -43,7 +43,7 @@ public class User {
 
     //Create a new message
     public Message createMessage(User reciever, String message, String timestamp) {
-        Message newMessage = new Message(message,this, reciever,timestamp);
+        Message newMessage = new Message(message, this, reciever, timestamp);
         return newMessage;
     }
     public void addMessageToHistory(Message message) {
@@ -134,11 +134,11 @@ public class User {
     public void setAddress(String address) {
         this.address = address;
     }
-    //TODO: complete constructor, add getters and setters for fields, and complete methods marked below
+    //  complete constructor, add getters and setters for fields, and complete methods marked below
     
     
     
-    //TODO: using scanner, ask the user to input their info again (name, phone num, address)
+    //  using scanner, ask the user to input their info again (name, phone num, address)
     public void modifyUser() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter your name: ");
@@ -154,12 +154,12 @@ public class User {
         scanner.close();
     }
     
-    //TODO: take username, password, and info out of all text files. set all values in this instance to null or zero
+    //  take username, password, and info out of all text files. set all values in this instance to null or zero
     public void deleteUser() {
     
     }
     
-    //TODO: add entry in blocked.txt detailing who is blocking who
+    //  add entry in blocked.txt detailing who is blocking who
     public void blockUser(User blocked) {
         try {
             File f = new File("blocked.txt");
@@ -171,7 +171,7 @@ public class User {
         }
     }
     
-    //TODO: add entry in invisible.txt detailing who is being made invisible to who
+    //  add entry in invisible.txt detailing who is being made invisible to who
     public void makeInvisible(User ghost) {
         try {
             File f = new File("invisible.txt");

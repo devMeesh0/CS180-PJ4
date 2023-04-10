@@ -14,7 +14,7 @@ public class Store {
     public String storeType;
     public String address;
 
-    //TODO: create constructor, getters and setters
+    //  create constructor, getters and setters
     public Store(String ownerUserName, String storeName, String storeType, String address) {
         this.ownerUsername = ownerUserName;
         this.storeName = storeName;
@@ -54,13 +54,13 @@ public class Store {
         this.address = address;
     }
 
-    //TODO: method that takes store and adds it to stores.txt
+    //  method that takes store and adds it to stores.txt
     public static void publish(String ownerUserName, String storeName, String storeType, String address) {
         try {
             File f = new File("stores.txt");
             FileOutputStream fos = new FileOutputStream(f, true);
             PrintWriter pw = new PrintWriter(fos);
-            pw.write(ownerUserName + ","+ storeName + "," + storeType + "," + address + "\n");
+            pw.write(ownerUserName + "," + storeName + "," + storeType + "," + address + "\n");
             pw.close();
         } catch (IOException e) {
             e.printStackTrace();

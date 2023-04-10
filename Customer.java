@@ -17,7 +17,7 @@ public class Customer extends User {
     }
     
     public Customer(String username, String password, String name, int numMessages, int phoneNum, String address) {
-        super(username, password, name, numMessages,phoneNum,address);
+        super(username, password, name, numMessages, phoneNum, address);
     }
     
     public ArrayList<Seller> getSellers() {
@@ -30,7 +30,7 @@ public class Customer extends User {
     
     
     
-    public void searchForCustomers(String fileName ,String information) {
+    public void searchForCustomers(String fileName, String information) {
         try {
             Scanner scanner = new Scanner(System.in);
             File f = new File(fileName);

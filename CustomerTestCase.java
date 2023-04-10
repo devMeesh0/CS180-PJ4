@@ -52,8 +52,9 @@ public class CustomerTestCase {
         fw.close();
         Customer customer = new Customer();
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        customer.searchForCustomers("user.txt","jf");
-        String expected = "User Type: Seller\nUser Name: Cjf\nPassword: cjf2004\nName: Jifei Chen\nNumber of Message: 5\nPhone Number: 23748394890\nAddress: 478 ChengDu\n";
+        customer.searchForCustomers("user.txt", "jf");
+        String expected = "User Type: Seller\nUser Name: Cjf\nPassword: cjf2004"
+            + "\nName: Jifei Chen\nNumber of Message: 5\nPhone Number: 23748394890\nAddress: 478 ChengDu\n";
         assertEquals(expected, outContent.toString());
         File file = new File("user.txt");
         file.delete();

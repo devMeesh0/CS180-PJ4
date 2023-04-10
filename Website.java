@@ -26,7 +26,7 @@ public class Website {
     public static User currentUser;
 
     public static void main(String[] args) {
-        // TODO: implement method
+        //   implement method
         Scanner scan = new Scanner(System.in);
 
         try {
@@ -54,7 +54,7 @@ public class Website {
         if (choice == 1 || choice == 2 || choice == 3) {
             switch (choice) {
                 case 1: {
-                    // TODO: add login method
+                    //   add login method
                     boolean success = login(scan);
                     if (success) {
                         System.out.println("You have successfully logged in!");
@@ -72,7 +72,7 @@ public class Website {
                 }
 
                 case 2: {
-                    // TODO: add create account method
+                    //   add create account method
                     createAccount(scan, "user.txt");
                     break;
                 }
@@ -131,7 +131,7 @@ public class Website {
     }
 
     public String[] getStores(Scanner scan) {
-        // TODO: implement method
+        //   implement method
         return new String[0];
     }
 
@@ -327,7 +327,7 @@ public class Website {
                         pw.close();
                         System.out.println("The user can no longer see you.");
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
+                        //   Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -347,7 +347,7 @@ public class Website {
                         pw.close();
                         System.out.println("The user can no longer see you.");
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
+                        //   Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -373,7 +373,7 @@ public class Website {
                         pw.close();
                         System.out.println("The user has been blocked.");
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
+                        //   Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -393,7 +393,7 @@ public class Website {
                         pw.close();
                         System.out.println("The user has been blocked.");
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
+                        //   Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -415,7 +415,7 @@ public class Website {
                     }
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+                //   Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -438,7 +438,7 @@ public class Website {
                     }
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+                //   Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -583,7 +583,8 @@ public class Website {
     private static void deleteMessage(Scanner scan, User reciever) {
         System.out.println("You selected: Delete a message");
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(), reciever.getName())));
+            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
+                reciever.getName())));
             String[] lines = reader.lines().toArray(String[]::new);
             reader.close();
             int count = 1;
@@ -633,7 +634,8 @@ public class Website {
                 }
             }
             
-            PrintWriter writer = new PrintWriter(new FileWriter(convoNamingScheme(currentUser.getName(), reciever.getName())));
+            PrintWriter writer = new PrintWriter(new FileWriter(convoNamingScheme(currentUser.getName(),
+                reciever.getName())));
             for (String line : newLines) {
                 writer.println(line);
             }
@@ -651,7 +653,8 @@ public class Website {
     private static void editMessage(Scanner scan, User reciever) {
         System.out.println("You selected: Edit a message");
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(), reciever.getName())));
+            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
+                reciever.getName())));
             String[] lines = reader.lines().toArray(String[]::new);
             reader.close();
             int count = 1;
@@ -690,9 +693,11 @@ public class Website {
             System.out.printf("Enter the new content for line %d:%n", count2);
             String newLineContent = scan.nextLine();
             
-            lines[lineNumber - 1] = newLineContent + "," + currentUser.getName() + "," + new Date().toString() + "," + true;
+            lines[lineNumber - 1] = newLineContent + "," + currentUser.getName() + "," 
+                + new Date().toString() + "," + true;
             
-            PrintWriter writer = new PrintWriter(new FileWriter(convoNamingScheme(currentUser.getName(), reciever.getName())));
+            PrintWriter writer = new PrintWriter(new FileWriter(convoNamingScheme(currentUser.getName(),
+                reciever.getName())));
             for (String line : lines) {
                 writer.println(line);
             }
@@ -711,7 +716,8 @@ public class Website {
     private static void viewMessageHistory(Scanner scan, User reciever) {
         System.out.println("You selected: View message history");
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(), reciever.getName())));
+            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
+                reciever.getName())));
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.split(",");
@@ -826,7 +832,7 @@ public class Website {
                     stores.add(new Store(tokens[0], tokens[1], tokens[2], tokens[3]));
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+                //   Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -850,7 +856,7 @@ public class Website {
                 }
             }
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
+            //   Auto-generated catch block
             e.printStackTrace();
         }
         messageMenu(scan, reciever);
@@ -900,7 +906,7 @@ public class Website {
     }
 
     public static ArrayList<Seller> listOfSellers() {
-        //TODO: method that loads sellers arraylist with list of sellers from user.txt
+        //  method that loads sellers arraylist with list of sellers from user.txt
         ArrayList<Seller> sellers = new ArrayList<>();
         File f = new File("user.txt");
         FileReader fr = null;

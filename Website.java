@@ -321,8 +321,7 @@ public class Website {
                     editMessage(scan, reciever);
                     break;
                 case 4:
-                    System.out.println("You selected: Delete a message");
-                    // add code to handle deleting a message
+                    deleteMessage(scan, reciever);
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -331,6 +330,74 @@ public class Website {
         }
 
         
+    }
+
+    private static void deleteMessage(Scanner scan, User reciever) {
+        System.out.println("You selected: Delete a message");
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName())));
+            String[] lines = reader.lines().toArray(String[]::new);
+            reader.close();
+            int count = 1;
+
+            System.out.println("Messages:");
+            for (int i = 0; i < lines.length; i++) {
+                String[] tokens = lines[i].split(",");
+                if (tokens[1].equals(currentUser.getName())) {
+                    System.out.print((count) + ": " + tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
+                    if (tokens[3].equals("true")) {
+                        System.out.println(" (edited)");
+                    } else {
+                        System.out.println();
+                    }
+                    count++;
+                }
+            }
+
+            int lineNumber;
+            System.out.println("Enter the number of the message you would like to delete:");
+            lineNumber = scan.nextInt();
+            scan.nextLine();
+
+            int count2 = 1;
+            for (int i = 0; i < lines.length; i++) {
+                String[] tokens = lines[i].split(",");
+                if (count2 == lineNumber) {
+                    lineNumber = i + 1;
+                    break;
+                }
+                if (tokens[1].equals(currentUser.getName())) {
+                    count2++;
+                }
+            }
+            
+                       
+            lines[lineNumber - 1] = "";
+            String[] newLines = new String[lines.length - 1];
+
+            for (int i = 0; i < lines.length; i++) {
+                if (i < lineNumber - 1) {
+                    newLines[i] = lines[i];
+                } else if (i == lineNumber - 1) {
+
+                } else if (i > lineNumber - 1) {
+                    newLines[i - 1] = lines[i];
+                }
+            }
+            
+            PrintWriter writer = new PrintWriter(new FileWriter("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName())));
+            for (String line : newLines) {
+                writer.println(line);
+            }
+            writer.close();
+            
+            System.out.println("File successfully updated.");
+        } catch (FileNotFoundException e) {
+            System.out.println("The conversation does not exist!");
+            messageMenu(scan, reciever);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void editMessage(Scanner scan, User reciever) {
@@ -364,7 +431,7 @@ public class Website {
             for (int i = 0; i < lines.length; i++) {
                 String[] tokens = lines[i].split(",");
                 if (count2 == lineNumber) {
-                    lineNumber = i;
+                    lineNumber = i + 1;
                     break;
                 }
                 if (tokens[1].equals(currentUser.getName())) {

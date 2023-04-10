@@ -40,16 +40,18 @@ public class Customer extends User {
             br = new BufferedReader(fr);
             String line = "";
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
+                String[] part = line.split(",");
                 String userType = part[0];
-                String userName = part[1];
-                String password = part[2];
-                String name = part[3];
-                int numMessages = Integer.parseInt(part[4]);
-                int phoneNum = Integer.parseInt(part[5]);
-                String address = part[6];
-                Seller seller = new Seller(userType, userName, ppassword, name, numMessages, phoneNum, address);
-                sellers.add(seller);
+                if (userType.equals("Seller")) {
+                    String userName = part[1];
+                    String password = part[2];
+                    String name = part[3];
+                    int numMessages = Integer.parseInt(part[4]);
+                    int phoneNum = Integer.parseInt(part[5]);
+                    String address = part[6];
+                    Seller seller = new Seller(userName, password, name, numMessages, phoneNum, address);
+                    sellers.add(seller);
+                }
             }
             return sellers; // need to change
         } catch (FileNotFoundException e) {

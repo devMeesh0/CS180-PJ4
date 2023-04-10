@@ -1,4 +1,12 @@
 public class Message {
+    /**
+     * CS180 PJ 4
+     *
+     * Message class
+     *
+     * @author Yifei Wang
+     * @version 4/5/2023
+     */
 
     private String messsage;
     private User sender;

@@ -209,23 +209,23 @@ public class Website {
                 break;
         
             case 3:
-
+                createStore(scan);
                 break;
 
             case 4:
-
+                blockUser(scan);
                 break;
 
             case 5:
-
+                setInvisible(scan);
                 break;
 
             case 6:
-
+                modifyUser(scan);
                 break;
 
             case 7:
-
+                deleteUser(scan);
                 break;
 
             case 8:
@@ -242,6 +242,234 @@ public class Website {
     }
 
     
+
+    private static void deleteUser(Scanner scan) {
+        System.out.println("ARE YOU SURE YOU WANT TO DELETE ACCOUNT? (Y/N)");
+        String choice = scan.nextLine().toLowerCase();
+
+        if (choice.equals("y")) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader("user.txt"));
+                String[] lines = reader.lines().toArray(String[]::new);
+                reader.close();
+                int count = 1;
+                for (int i = 0; i < lines.length; i++) {
+                    String[] tokens = lines[i].split(",");
+                    if (tokens[3].equals(currentUser.getName())) {
+                        break;
+                    }
+                    count++;
+                }
+    
+                int lineNumber = count;
+                
+                           
+                lines[lineNumber - 1] = "";
+                String[] newLines = new String[lines.length - 1];
+    
+                for (int i = 0; i < lines.length; i++) {
+                    if (i < lineNumber - 1) {
+                        newLines[i] = lines[i];
+                    } else if (i == lineNumber - 1) {
+    
+                    } else if (i > lineNumber - 1) {
+                        newLines[i - 1] = lines[i];
+                    }
+                }
+                
+                PrintWriter writer = new PrintWriter(new FileWriter("user.txt"));
+                for (String line : newLines) {
+                    writer.println(line);
+                }
+                writer.close();
+                
+                System.out.println("File successfully updated.");
+            } catch (FileNotFoundException e) {
+                System.out.println("The File does not exist!");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Goodbye!");
+        } else {
+            if (currentUser instanceof Seller) {
+                sellerMenu(scan);
+            }
+            if (currentUser instanceof Customer) {
+                customerMenu(scan);
+            }
+        }
+    }
+
+    private static void modifyUser(Scanner scan) {
+        currentUser.modifyUser();
+        if (currentUser instanceof Seller) {
+            sellerMenu(scan);
+        }
+        if (currentUser instanceof Customer) {
+            customerMenu(scan);
+        }
+    }
+
+    private static void setInvisible(Scanner scan) {
+        System.out.println("Please enter the name of the User you would like to set yourself invisible for:");
+        String name = scan.nextLine().toLowerCase();
+
+        if (currentUser instanceof Customer) {
+            ArrayList<Seller> sellers = listOfSellers();
+            for (int i = 0; i < sellers.size(); i++) {
+                if (sellers.get(i).getName().equals(name)) {
+                    File file = new File("invisible.txt");
+                    FileWriter fw;
+                    try {
+                        fw = new FileWriter(file, true);
+                        PrintWriter pw = new PrintWriter(fw);
+                        pw.println(currentUser.getName() + "," + name);
+                        pw.close();
+                        System.out.println("The user can no longer see you.");
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+            customerMenu(scan);
+        } 
+        if (currentUser instanceof Seller) {
+            ArrayList<Customer> customers = listofCustomers();
+            for (int i = 0; i < customers.size(); i++) {
+                if (customers.get(i).getName().equals(name)) {
+                    File file = new File("invisible.txt");
+                    FileWriter fw;
+                    try {
+                        fw = new FileWriter(file, true);
+                        PrintWriter pw = new PrintWriter(fw);
+                        pw.println(currentUser.getName() + "," + name);
+                        pw.close();
+                        System.out.println("The user can no longer see you.");
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+            sellerMenu(scan);
+        }
+    }
+
+    private static void blockUser(Scanner scan) {
+        System.out.println("Please enter the name of the User you would like to block:");
+        String name = scan.nextLine().toLowerCase();
+
+        if (currentUser instanceof Customer) {
+            ArrayList<Seller> sellers = listOfSellers();
+            for (int i = 0; i < sellers.size(); i++) {
+                if (sellers.get(i).getName().equals(name)) {
+                    File file = new File("blocked.txt");
+                    FileWriter fw;
+                    try {
+                        fw = new FileWriter(file, true);
+                        PrintWriter pw = new PrintWriter(fw);
+                        pw.println(currentUser.getName() + "," + name);
+                        pw.close();
+                        System.out.println("The user has been blocked.");
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+            customerMenu(scan);
+        }
+        if (currentUser instanceof Seller) {
+            ArrayList<Customer> customers = listofCustomers();
+            for (int i = 0; i < customers.size(); i++) {
+                if (customers.get(i).getName().equals(name)) {
+                    File file = new File("blocked.txt");
+                    FileWriter fw;
+                    try {
+                        fw = new FileWriter(file, true);
+                        PrintWriter pw = new PrintWriter(fw);
+                        pw.println(currentUser.getName() + "," + name);
+                        pw.close();
+                        System.out.println("The user has been blocked.");
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+            sellerMenu(scan);
+        }
+    }
+
+    private static boolean isInvisibleToYou(User other) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("invisible.txt"));
+
+            String line;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    String[] tokens = line.split(",");
+                    if (tokens[1].equals(currentUser.getName()) && tokens[0].equals(other.getName())) {
+                        return true;
+                    }
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("FileNotFound!");
+        }
+        return false;
+    }
+
+    private static boolean hasBlockedYou(User other) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("blocked.txt"));
+
+            String line;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    String[] tokens = line.split(",");
+                    if (tokens[1].equals(currentUser.getName()) && tokens[0].equals(other.getName())) {
+                        return true;
+                    }
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("FileNotFound!");
+        }
+        return false;
+    }
+
+    private static void createStore(Scanner scan) {
+        System.out.print("Enter store name: ");
+        String name = scan.nextLine();
+        System.out.print("Enter store type (restauraunt, grocery store, etc.): ");
+        String type = scan.nextLine();
+        System.out.print("Enter store address (no commas): ");
+        String address = scan.nextLine();
+        
+        // write to file
+        try {
+            File file = new File("stores.txt");
+            FileWriter fw = new FileWriter(file, true);
+            PrintWriter pw = new PrintWriter(fw);
+            pw.println(currentUser.getName() + "," + name + "," + type + "," + address);
+            pw.close();
+            System.out.println("Store added to file.");
+        } catch (IOException e) {
+            System.out.println("Error writing to file.");
+            e.printStackTrace();
+        }
+        sellerMenu(scan);
+    }
 
     private static void messageCustomerList(Scanner scan) {
         User reciever;
@@ -530,7 +758,7 @@ public class Website {
         }
     }
 
-    public static void customerMenu(Scanner scanner) {
+    public static void customerMenu(Scanner scan) {
         int choice;
         System.out.println("Welcome Customer " + currentUser.getName() + "!");
         System.out.println("Please Select an action: ");
@@ -539,8 +767,136 @@ public class Website {
         System.out.println("3. Block User");
         System.out.println("4. Ghost User (set Invisible)");
         System.out.println("5. Modify User");
-        System.out.println("6. Logout");
+        System.out.println("6. Delete User");
+        System.out.println("7. Logout");
+        choice = scan.nextInt();
+        scan.nextLine();
+
         
+        switch (choice) {
+            case 1:
+                messageSellerSearch(scan);
+                break;
+                
+            case 2:
+                messageSellerList(scan);
+                break;
+        
+            case 3:
+                blockUser(scan);
+                break;
+
+            case 4:
+                setInvisible(scan);
+                break;
+
+            case 5:
+                modifyUser(scan);
+                break;
+
+            case 6:
+                deleteUser(scan);
+                break;
+
+            case 7:
+                System.out.println("Logging out...");
+                currentUser = null;
+                break;
+
+            default:
+                System.out.println("That's not a valid choice. Reloading menu...");
+                sellerMenu(scan);
+                break;
+        }
+    }
+
+    private static void messageSellerList(Scanner scan) {
+        User reciever = null;
+        ArrayList<Store> stores = new ArrayList<Store>();
+        ArrayList<Seller> sellers = listOfSellers();
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("stores.txt"));
+            
+            String line;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    String[] tokens = line.split(",");
+
+                    stores.add(new Store(tokens[0], tokens[1], tokens[2], tokens[3]));
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            System.out.println("The following is a list of Stores that you can contact: ");
+            for (int i = 0; i < stores.size(); i++) {
+                System.out.println((i + 1) + ": " + stores.get(i).getStoreName());
+            }
+            int choice = 0;
+            do {
+                System.out.println("Please enter the number of a store:");
+                choice = scan.nextInt();
+                scan.nextLine();
+            } while (!(choice >= 1 && choice <= stores.size()));
+
+            String storeSellerName = stores.get(choice - 1).getOwnerUsername();
+
+            for (int i = 0; i < sellers.size(); i++) {
+                if (sellers.get(i).getName().equals(storeSellerName)) {
+                    reciever = sellers.get(i);
+                    break;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        messageMenu(scan, reciever);
+
+    }
+
+    private static void messageSellerSearch(Scanner scan) {
+        ArrayList<Seller> sellers = listOfSellers();
+        String searchSeller;
+        boolean found = false;
+        Seller foundSell = null;
+
+        do {
+            System.out.print("Enter the name of the Sellers to search for: ");
+            searchSeller = scan.nextLine();
+
+            for (Seller seller : sellers) {
+                if (seller.getName().equalsIgnoreCase(searchSeller)) {
+                    found = true;
+                    foundSell = seller;
+                    break;
+                }
+            }
+
+            if (!found) {
+                System.out.println("Seller " + searchSeller + " could not be found.");
+
+                System.out.println("Enter 1 to search again, or 2 to quit to main menu: ");
+                int choice = scan.nextInt();
+                scan.nextLine();
+
+                if (choice == 2) {
+                    messageSellerSearch(scan);
+                    break;
+                }
+            }
+
+            if (found) {
+                if (foundSell != null) {
+                    messageMenu(scan, foundSell);
+                } else {
+                    System.out.println("There was an error with the Seller search.");
+                }
+            } 
+
+        } while (!found);
     }
 
     public static ArrayList<Seller> listOfSellers() {
@@ -559,7 +915,7 @@ public class Website {
                 if (userType.equals("seller")) {
                     String userName = part[1];
                     String password = part[2];
-                    String name = part[3];
+                    String name = part[3].toLowerCase();
                     int numMessages = Integer.parseInt(part[4]);
                     int phoneNum = Integer.parseInt(part[5]);
                     String address = part[6];
@@ -601,7 +957,7 @@ public class Website {
                 if (userType.equals("customer")) {
                     String userName = part[1];
                     String password = part[2];
-                    String name = part[3];
+                    String name = part[3].toLowerCase();
                     int numMessages = Integer.parseInt(part[4]);
                     int phoneNum = Integer.parseInt(part[5]);
                     String address = part[6];

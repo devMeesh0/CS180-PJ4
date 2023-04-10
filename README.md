@@ -8,6 +8,9 @@ Nathan Rusk,
 Elijah Van Grootheest (Report Submission), 
 Yifei Wang
 
+# Instructions
+In order to run this program, simply copy all java and text files, and ensure the folder structure is as is displayed here. Then, hit run on the main method in Website.java!
+
 # Table of Contents
 - [Seller Class](#seller-class)
 - [Customer Class](#customer-class)

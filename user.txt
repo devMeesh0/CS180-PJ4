@@ -1,1 +1,2 @@
-customer,bob@bob.bob,bob,bob,0,1234567890,address
+customer,a@a.com,pass,Ameesh,0,1234567890,500
+seller,bob@bob.bob,pass,Bob,0,1234567890,500

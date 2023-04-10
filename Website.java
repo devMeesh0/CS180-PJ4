@@ -2,8 +2,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.Scanner;
 
 /**
@@ -186,8 +191,10 @@ public class Website {
         System.out.println("4. Block User");
         System.out.println("5. Ghost User (set Invisible)");
         System.out.println("6. Modify User");
-        System.out.println("7. Logout");
+        System.out.println("7. Delete Account");
+        System.out.println("8. Logout");
         choice = scan.nextInt();
+        scan.nextLine();
 
         switch (choice) {
             case 1:
@@ -215,6 +222,10 @@ public class Website {
                 break;
 
             case 7:
+
+                break;
+
+            case 8:
                 System.out.println("Logging out...");
                 currentUser = null;
                 break;
@@ -230,7 +241,116 @@ public class Website {
     
 
     private static void messageCustomerSearch(Scanner scan) {
-        
+        ArrayList<Customer> customers = listofCustomers();
+        String searchCustomer;
+        boolean found = false;
+        Customer foundCust = null;
+
+        do {
+            System.out.print("Enter the name of the customer to search for: ");
+            searchCustomer = scan.nextLine();
+
+            for (Customer customer : customers) {
+                if (customer.getName().equalsIgnoreCase(searchCustomer)) {
+                    found = true;
+                    foundCust = customer;
+                    break;
+                }
+            }
+
+            if (!found) {
+                System.out.println("Customer " + searchCustomer + " could not be found.");
+
+                System.out.println("Enter 1 to search again, or 2 to quit to main menu: ");
+                int choice = scan.nextInt();
+                scan.nextLine();
+
+                if (choice == 2) {
+                    messageCustomerSearch(scan);
+                    break;
+                }
+            }
+
+            if (found) {
+                if (foundCust != null) {
+                    messageMenu(scan, foundCust);
+                } else {
+                    System.out.println("There was an error with the customer search.");
+                }
+            } 
+
+        } while (!found);
+
+    }
+
+    private static void messageMenu(Scanner scan, User reciever) {
+        boolean quit = false;
+
+        while (!quit) {
+            // print the menu options
+            System.out.println("Please select an option:");
+            System.out.println("1. Send a new message");
+            System.out.println("2. View message history");
+            System.out.println("3. Edit a message");
+            System.out.println("4. Delete a message");
+            System.out.println("0. Main Menu");
+
+            // read user input
+            int choice = scan.nextInt();
+            scan.nextLine(); // consume the newline character
+
+            switch (choice) {
+                case 0:
+                    quit = true;
+                    if (currentUser instanceof Customer) {
+                        customerMenu(scan);
+                    } else if (currentUser instanceof Seller) {
+                        sellerMenu(scan);
+                    }
+                    break;
+                case 1:
+                    sendNewMessage(scan, reciever);
+                    break;
+                case 2:
+                    System.out.println("You selected: View message history");
+                    // add code to handle viewing message history
+                    break;
+                case 3:
+                    System.out.println("You selected: Edit a message");
+                    // add code to handle editing a message
+                    break;
+                case 4:
+                    System.out.println("You selected: Delete a message");
+                    // add code to handle deleting a message
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
+            }
+        }
+
+        scan.close();
+    }
+
+    private static void sendNewMessage(Scanner scan, User reciever) {
+        System.out.println("You selected: Send a new message");
+        System.out.println("Enter the message you would like to send to " + reciever.getName() + ": ");
+        String messageStr = scan.nextLine();
+        Message message = new Message(messageStr, currentUser, reciever, new Date().toString());
+        File file = new File("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName()));
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            FileWriter writer = new FileWriter(file);
+            writer.write(messageStr);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void customerMenu(Scanner scanner) {
@@ -243,6 +363,7 @@ public class Website {
         System.out.println("4. Ghost User (set Invisible)");
         System.out.println("5. Modify User");
         System.out.println("6. Logout");
+        
     }
 
     public void printStoreList() {
@@ -271,5 +392,95 @@ public class Website {
     public User searchSellerByKeyword() {
 
         return new User();
+    }
+
+    public static ArrayList<Seller> listOfSellers() {
+        //TODO: method that loads sellers arraylist with list of sellers from user.txt
+        ArrayList<Seller> sellers = new ArrayList<>();
+        File f = new File("user.txt");
+        FileReader fr = null;
+        BufferedReader br = null;
+        try {
+            fr = new FileReader(f);
+            br = new BufferedReader(fr);
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                String[] part = line.split(",");
+                String userType = part[0];
+                if (userType.equals("seller")) {
+                    String userName = part[1];
+                    String password = part[2];
+                    String name = part[3];
+                    int numMessages = Integer.parseInt(part[4]);
+                    int phoneNum = Integer.parseInt(part[5]);
+                    String address = part[6];
+                    Seller seller = new Seller(userName, password, name, numMessages, phoneNum, address);
+                    sellers.add(seller);
+                }
+            }
+            return sellers; // need to change
+        } catch (FileNotFoundException e) {
+            return null;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+                if (fr != null) {
+                    fr.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static ArrayList<Customer> listofCustomers() {
+        ArrayList<Customer> customers = new ArrayList<>();
+        File f = new File("user.txt");
+        FileReader fr = null;
+        BufferedReader br = null;
+        try {
+            fr = new FileReader(f);
+            br = new BufferedReader(fr);
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                String[] part = line.split(",");
+                String userType = part[0];
+                if (userType.equals("customer")) {
+                    String userName = part[1];
+                    String password = part[2];
+                    String name = part[3];
+                    int numMessages = Integer.parseInt(part[4]);
+                    int phoneNum = Integer.parseInt(part[5]);
+                    String address = part[6];
+                    Customer customer = new Customer(userName, password, name, numMessages, phoneNum, address);
+                    customers.add(customer);
+                }
+            }
+            return customers; // need to change
+        } catch (FileNotFoundException e) {
+            return null;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+                if (fr != null) {
+                    fr.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static String convoNamingScheme(String str1, String str2) {
+        String[] arr = {str1, str2};
+        Arrays.sort(arr);
+        return arr[0] + "_" + arr[1] + ".txt";
     }
 }

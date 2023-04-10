@@ -19,7 +19,7 @@ public class User {
     public String address;
     public List<Message>messageHistoryList;
     public User() {
-        messageHistoryList = new ArrayList<>();
+
     }
     public User(String username, String password, String name, int numMessages, int phoneNum, String address) {
         this.username = username;
@@ -29,8 +29,7 @@ public class User {
         this.phoneNum = phoneNum;
         this.address = address;
 
-        // initialize messageHistoryList
-        messageHistoryList = new ArrayList<>();
+        
     }
     //Getters and Setters
 
@@ -43,7 +42,7 @@ public class User {
     }
 
     //Create a new message
-    public Message createMessage(User reciever, String message,String timestamp) {
+    public Message createMessage(User reciever, String message, String timestamp) {
         Message newMessage = new Message(message,this, reciever,timestamp);
         return newMessage;
     }

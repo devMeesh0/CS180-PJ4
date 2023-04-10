@@ -13,57 +13,17 @@ import java.io.*;
 public class Seller extends User{
 
     public static ArrayList<Store> stores; //list of stores
-    private List<Customer> customerList; //to instantiate a list of cust. to choose from
+    private static List<Customer> customerList; //to instantiate a list of cust. to choose from
     
     public Seller(String username, String password, String Name, int numMessages, int phoneNum, String address) {
         //creates constructor
         super(username, password, Name, numMessages, phoneNum, address ); //pulls from user superclass
-        this.customerList = listofCustomers(); //instantiates customer list or should it be...
+         //instantiates customer list or should it be...
         //customerList = new ArrayList<>();
 
     }
     
-    public ArrayList<Customer> listofCustomers() {
-        ArrayList<Customer> customers = new ArrayList<>();
-        File f = new File("user.txt");
-        FileReader fr = null;
-        BufferedReader br = null;
-        try {
-            fr = new FileReader(f);
-            br = new BufferedReader(fr);
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                String[] part = line.split(",");
-                String userType = part[0];
-                if (userType.equals("customer")) {
-                    String userName = part[1];
-                    String password = part[2];
-                    String name = part[3];
-                    int numMessages = Integer.parseInt(part[4]);
-                    int phoneNum = Integer.parseInt(part[5]);
-                    String address = part[6];
-                    Customer customer = new Customer(userName, password, name, numMessages, phoneNum, address);
-                    customers.add(customer);
-                }
-            }
-            return customers; // need to change
-        } catch (FileNotFoundException e) {
-            return null;
-        } catch (Exception e) {
-            return null;
-        } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-                if (fr != null) {
-                    fr.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    
     
     public void setCustomerList(ArrayList<Customer> customers) {
         this.customerList = customerList;

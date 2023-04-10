@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -163,9 +164,11 @@ public class Website {
             accountType = scanner.nextLine().trim().toLowerCase();
         } while (!accountType.equals("seller") && !accountType.equals("customer"));
 
-        try (PrintWriter writer = new PrintWriter(new File("user.txt"))) {
-            writer.println(accountType + "," + username + "," + password + "," + name + "," + 0 + "," + phoneNum + ","
+        try (PrintWriter writer = new PrintWriter(new FileOutputStream(new File("user.txt"), true))) {
+            writer.append(accountType + "," + username + "," + password + "," + name + "," + 0 + "," + phoneNum + ","
                     + address);
+            writer.println();
+            writer.flush();
             System.out.println("User created! You are now logged in");
             if (accountType.equals("seller")) {
                 currentUser = new Seller(username, password, name, 0, Integer.parseInt(phoneNum), address);
@@ -312,8 +315,7 @@ public class Website {
                     sendNewMessage(scan, reciever);
                     break;
                 case 2:
-                    System.out.println("You selected: View message history");
-                    // add code to handle viewing message history
+                    viewMessageHistory(scan, reciever);
                     break;
                 case 3:
                     System.out.println("You selected: Edit a message");
@@ -329,7 +331,31 @@ public class Website {
             }
         }
 
-        scan.close();
+        
+    }
+
+    private static void viewMessageHistory(Scanner scan, User reciever) {
+        System.out.println("You selected: View message history");
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName())));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] tokens = line.split(",");
+                System.out.print(tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
+                if (tokens[3].equals("true")) {
+                    System.out.println(" (edited)");
+                } else {
+                    System.out.println();
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("The conversation does not exist! Please send a message to see the history.");
+            messageMenu(scan, reciever);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Press enter to continue");
+        scan.nextLine();
     }
 
     private static void sendNewMessage(Scanner scan, User reciever) {
@@ -347,13 +373,17 @@ public class Website {
         }
 
         try {
-            FileWriter writer = new FileWriter(file);
-            writer.write(message.toString());
+            PrintWriter writer = new PrintWriter(new FileOutputStream(file, true));
+            writer.append(message.toString());
+            writer.println();
             writer.flush();
+            System.out.println("Message Sent!");
+            writer.close();
             
         } catch (IOException e) {
             e.printStackTrace();
         }
+        messageMenu(scan, reciever);
     }
 
     public static void customerMenu(Scanner scanner) {

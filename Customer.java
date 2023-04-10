@@ -16,9 +16,9 @@ public class Customer extends User {
     
     }
     
-    public Customer(String username, String password, String name, int numMessages, int phoneNum, String address, ArrayList<Seller> sellers) {
+    public Customer(String username, String password, String name, int numMessages, int phoneNum, String address) {
         super(username, password, name, numMessages,phoneNum,address);
-        this.sellers = sellers;
+        this.sellers = listOfSellers();
     }
     
     public ArrayList<Seller> getSellers() {
@@ -29,7 +29,7 @@ public class Customer extends User {
         this.sellers = sellers;
     }
     
-    public static ArrayList<Seller> viewListOfSellers() {
+    public static ArrayList<Seller> listOfSellers() {
         //TODO: method that loads sellers arraylist with list of sellers from user.txt
         ArrayList<Seller> sellers = new ArrayList<>();
         File f = new File("user.txt");
@@ -42,7 +42,7 @@ public class Customer extends User {
             while ((line = br.readLine()) != null) {
                 String[] part = line.split(",");
                 String userType = part[0];
-                if (userType.equals("Seller")) {
+                if (userType.equals("seller")) {
                     String userName = part[1];
                     String password = part[2];
                     String name = part[3];
@@ -102,7 +102,6 @@ public class Customer extends User {
                             userType, userName, password, name, numMessages, phoneNum, address);
                     System.out.println();
                 }
-                
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

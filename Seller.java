@@ -17,42 +17,55 @@ public class Seller extends User{
     
     public Seller(String username, String password, String Name, int numMessages, int phoneNum, String address) {
         //creates constructor
-        super(username,password,Name,numMessages,phoneNum,address); //pulls from user superclass
-        this.customerList = customerList; //instantiates customer list or should it be...
+        super(username, password, Name, numMessages, phoneNum, address ); //pulls from user superclass
+        this.customerList = listofCustomers(); //instantiates customer list or should it be...
         //customerList = new ArrayList<>();
 
     }
     
-    // public ArrayList<Customer> ListofCustomers() {
-    //     try {
-    //         File fc = new File("user.txt"); //instantiates file for user info
-    //         BufferedReader bfrc = null; //intantiates buffer reader
-    //         bfrc = new BufferedReader(new FileReader(fc)); //created buffer reader and file reader
-    //         ArrayList<String> customerList = new ArrayList<>();
-    //         String line = "";
-    //         while ((line = bfrc.readLine()) != null) {
-    //             if(User instanceof Customer) {
-    //                 //not 100% how to implement this but should only add line if user ==
-    //                 // customer or rather AccountType defined in main and stored in user.txt is customer
-    //                 String[] parts = line.split(","); //splits csv at comma
-    //                 //customerList.add(line);
-    //                 String name = parts[3]; //creates name using 3rd element in csv
-    //                 customerList.add(name); //adds to customer list
-    //                 bfrc.readLine(); //continues to read file
-    //             }
-    //         } bfrc.close(); //closes file
-
-    //     }
-    //         return customerList;
-    //     } catch (FileNotFoundException e) {
-    //         return null;
-    //     } catch (Exception e) {
-    //         e.printStackTrace;
-
-    //     }
-    // }
+    public ArrayList<Customer> listofCustomers() {
+        ArrayList<Customer> customers = new ArrayList<>();
+        File f = new File("user.txt");
+        FileReader fr = null;
+        BufferedReader br = null;
+        try {
+            fr = new FileReader(f);
+            br = new BufferedReader(fr);
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                String[] part = line.split(",");
+                String userType = part[0];
+                if (userType.equals("customer")) {
+                    String userName = part[1];
+                    String password = part[2];
+                    String name = part[3];
+                    int numMessages = Integer.parseInt(part[4]);
+                    int phoneNum = Integer.parseInt(part[5]);
+                    String address = part[6];
+                    Customer customer = new Customer(userName, password, name, numMessages, phoneNum, address);
+                    customers.add(customer);
+                }
+            }
+            return customers; // need to change
+        } catch (FileNotFoundException e) {
+            return null;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+                if (fr != null) {
+                    fr.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     
-    public List<Customer> setCustomerList() {
+    public void setCustomerList(ArrayList<Customer> customers) {
         this.customerList = customerList;
     }
 
@@ -67,32 +80,33 @@ public class Seller extends User{
         try {
             File fs = new File("stores.txt"); //instantiates file for user info
             BufferedReader bfrs = null; //intantiates buffer reader
-            bfrs = new BufferedReader(new FileReader(fc)); //created buffer reader and file reader
-            ArrayList<String> storesList = new ArrayList<>();
+            bfrs = new BufferedReader(new FileReader(fs)); //created buffer reader and file reader
+            ArrayList<Store> storesList = new ArrayList<>();
             String line = "";
-            while ((line = bfrc.readLine()) != null) {
-                    storesList.add(line);
+            while ((line = bfrs.readLine()) != null) {
+                    // storesList.add(line);
                     bfrs.readLine();
             } bfrs.close();
 
-
+            return storesList;
+        } catch (FileNotFoundException e) {
+            return null;
+        } catch (Exception e) {
+            return null;
         }
-       return storesList;
-     catch (FileNotFoundException e) {
-        return null;
-    } catch (Exception e) {
-        return null;
 
-    }
-
-    return stores; 
+    // return stores; 
 }
 
-    public void createStore(String ownerUsername, String storeName, String storeType, String address) {
-    //creates Store object
-        FileWriter fws = new FileWriter("stores.txt", true);
-        fws.write(ownerUsername+","+storeName+","+storeType+","+address);
-        fws.close();
+    public void publishStore(String ownerUsername, String storeName, String storeType, String address) {
+    try (//adds store to stores.txt
+        FileWriter fws = new FileWriter("stores.txt", true)) {
+            fws.write(ownerUsername+","+storeName+","+storeType+","+address);
+            fws.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
 

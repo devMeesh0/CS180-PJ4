@@ -120,3 +120,38 @@ These methods are used to access and modify the fields of a Store object.
 
 `public static void publish(String ownerUserName, String storeName, String storeType, String address)`:
 This method takes in the store's details as arguments and writes them to a file called stores.txt. If the file does not exist, it will be created. If it does exist, the new store information will be appended to the end of the file.
+
+# Website Class
+This is the main driver class for a project that is a Seller-Customer interface. The class contains several methods for creating user accounts, logging in, and displaying menus for customers and sellers. The class uses the User, Seller, and Customer classes to represent users.
+
+## Fields
+`public static User currentUser` : A static field representing the current user logged into the interface.
+## Methods
+`public static void main(String[] args)` : This is the main method that runs when the program is executed. It takes in a Scanner object and prints out a welcome menu. It also catches InvalidInputException, FileNotFoundException, and IOException.
+
+`public static void printWelcomeMenu(Scanner scan)` throws InvalidInputException, IOException : A method that prints a welcome menu and prompts the user to either log in, create an account or quit. This method throws InvalidInputException and IOException.
+
+`public static boolean login(Scanner scanner)` throws IOException : A method that prompts the user to enter their username and password. It then reads a file (user.txt) and checks if the username and password match. If the user is a seller or customer, it sets the currentUser field to a Seller or Customer object, respectively. The method returns true if the login is successful, false otherwise. This method throws an IOException.
+
+`private static void setUser(String[] tokens)` : A private helper method that sets the currentUser field to a Seller or Customer object based on the tokens parameter.
+
+`public String[] getStores(Scanner scan)` : A method that returns an array of stores. This method is not implemented.
+
+`public static void createAccount(Scanner scanner, String fileName)` : A method that prompts the user to enter their information (name, username, password, phone number, address, and account type) and writes it to a file (user.txt). It then sets the currentUser field to a Seller or Customer object based on the account type. This method throws a FileNotFoundException.
+
+`blockUser()`: blocks a user by writing to a file.
+`isInvisibleToYou()`: checks if another user is invisible to the current user by reading from a file.
+`hasBlockedYou()`: checks if another user has blocked the current user by reading from a file.
+`createStore()`: creates a store by writing to a file.
+`messageCustomerList()`: displays a list of customers for the current seller to message and opens the message menu for the selected customer.
+`messageCustomerSearch()`: searches for a customer by name and opens the message menu for the found customer.
+`messageMenu()`: displays the message menu for a selected customer, allowing the current user to send and view messages.
+`editMessage(Scanner scan, User reciever)`: This method allows the user to edit a previously sent message. The user is prompted to select the number of the message they would like to change, and then enter the new content for that message.
+
+`viewMessageHistory(Scanner scan, User reciever)`: This method allows the user to view the message history between them and the recipient.
+
+`sendNewMessage(Scanner scan, User reciever)`: This method allows the user to send a new message to the recipient.
+
+`customerMenu(Scanner scan)`: This method displays the main menu for a customer. The user is prompted to select an action, which can include messaging a seller, blocking a user, modifying user settings, and more.
+
+`messageSellerList(Scanner scan)`: This method displays a list of sellers that the user can message.

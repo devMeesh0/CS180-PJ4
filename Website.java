@@ -318,8 +318,7 @@ public class Website {
                     viewMessageHistory(scan, reciever);
                     break;
                 case 3:
-                    System.out.println("You selected: Edit a message");
-                    // add code to handle editing a message
+                    editMessage(scan, reciever);
                     break;
                 case 4:
                     System.out.println("You selected: Delete a message");
@@ -331,6 +330,66 @@ public class Website {
             }
         }
 
+        
+    }
+
+    private static void editMessage(Scanner scan, User reciever) {
+        System.out.println("You selected: Edit a message");
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName())));
+            String[] lines = reader.lines().toArray(String[]::new);
+            reader.close();
+            int count = 1;
+
+            System.out.println("Messages:");
+            for (int i = 0; i < lines.length; i++) {
+                String[] tokens = lines[i].split(",");
+                if (tokens[1].equals(currentUser.getName())) {
+                    System.out.print((count) + ": " + tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
+                    if (tokens[3].equals("true")) {
+                        System.out.println(" (edited)");
+                    } else {
+                        System.out.println();
+                    }
+                    count++;
+                }
+            }
+
+            int lineNumber;
+            System.out.println("Enter the number of the message you would like to change:");
+            lineNumber = scan.nextInt();
+            scan.nextLine();
+
+            int count2 = 1;
+            for (int i = 0; i < lines.length; i++) {
+                String[] tokens = lines[i].split(",");
+                if (count2 == lineNumber) {
+                    lineNumber = i;
+                    break;
+                }
+                if (tokens[1].equals(currentUser.getName())) {
+                    count2++;
+                }
+            }
+            
+            System.out.printf("Enter the new content for line %d:%n", count2);
+            String newLineContent = scan.nextLine();
+            
+            lines[lineNumber - 1] = newLineContent + "," + currentUser.getName() + "," + new Date().toString() + "," + true;
+            
+            PrintWriter writer = new PrintWriter(new FileWriter("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName())));
+            for (String line : lines) {
+                writer.println(line);
+            }
+            writer.close();
+            
+            System.out.println("File successfully updated.");
+        } catch (FileNotFoundException e) {
+            System.out.println("The conversation does not exist!");
+            messageMenu(scan, reciever);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         
     }
 
@@ -350,7 +409,6 @@ public class Website {
             }
         } catch (FileNotFoundException e) {
             System.out.println("The conversation does not exist! Please send a message to see the history.");
-            messageMenu(scan, reciever);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -383,7 +441,6 @@ public class Website {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        messageMenu(scan, reciever);
     }
 
     public static void customerMenu(Scanner scanner) {

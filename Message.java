@@ -4,14 +4,16 @@ public class Message {
     private User sender;
     private User reciever;
     private String timestamp;
+    private boolean edited;
     //TODO: method that creates conversation file if need be, then adds message to conversation text file
     public boolean updateConversation(Message mes) {
         this.messsage = mes.messsage;
         this.sender = mes.sender;
         this.reciever = mes.reciever;
         this.timestamp = mes.timestamp;
+        this.edited = mes.edited;
         return true;
-//        return false;
+        //return false;
     }
 
     //TODO: need constructor, gettters and setters for all above variables, implement specific methods marked below
@@ -21,10 +23,18 @@ public class Message {
         this.sender = sender;
         this.reciever = reciever;
         this.timestamp = timestamp;
+        this.edited = false;
     }
 
 
 
+    public boolean isEdited() {
+        return edited;
+    }
+
+    public void setEdited(boolean edited) {
+        this.edited = edited;
+    }
 
 
     public String getMesssage() {
@@ -58,4 +68,10 @@ public class Message {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
+
+    @Override
+    public String toString() {
+        return messsage + "," + sender.getName() + "," + timestamp + "," + edited;
+    }
+
 }

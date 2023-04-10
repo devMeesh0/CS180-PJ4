@@ -345,9 +345,12 @@ public class Website {
                 e.printStackTrace();
             }
         }
+
         try {
             FileWriter writer = new FileWriter(file);
-            writer.write(messageStr);
+            writer.write(message.toString());
+            writer.flush();
+            
         } catch (IOException e) {
             e.printStackTrace();
         }

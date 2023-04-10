@@ -5,7 +5,7 @@ import java.io.*;
  *
  * Store class
  *
- * @author Nathar Rusk
+ * @author Nathan Rusk
  * @version 4/5/2023
  */
 public class Store {

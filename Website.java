@@ -583,7 +583,7 @@ public class Website {
     private static void deleteMessage(Scanner scan, User reciever) {
         System.out.println("You selected: Delete a message");
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName())));
+            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(), reciever.getName())));
             String[] lines = reader.lines().toArray(String[]::new);
             reader.close();
             int count = 1;
@@ -633,7 +633,7 @@ public class Website {
                 }
             }
             
-            PrintWriter writer = new PrintWriter(new FileWriter("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName())));
+            PrintWriter writer = new PrintWriter(new FileWriter(convoNamingScheme(currentUser.getName(), reciever.getName())));
             for (String line : newLines) {
                 writer.println(line);
             }
@@ -651,7 +651,7 @@ public class Website {
     private static void editMessage(Scanner scan, User reciever) {
         System.out.println("You selected: Edit a message");
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName())));
+            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(), reciever.getName())));
             String[] lines = reader.lines().toArray(String[]::new);
             reader.close();
             int count = 1;
@@ -692,7 +692,7 @@ public class Website {
             
             lines[lineNumber - 1] = newLineContent + "," + currentUser.getName() + "," + new Date().toString() + "," + true;
             
-            PrintWriter writer = new PrintWriter(new FileWriter("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName())));
+            PrintWriter writer = new PrintWriter(new FileWriter(convoNamingScheme(currentUser.getName(), reciever.getName())));
             for (String line : lines) {
                 writer.println(line);
             }
@@ -711,7 +711,7 @@ public class Website {
     private static void viewMessageHistory(Scanner scan, User reciever) {
         System.out.println("You selected: View message history");
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName())));
+            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(), reciever.getName())));
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.split(",");
@@ -736,7 +736,7 @@ public class Website {
         System.out.println("Enter the message you would like to send to " + reciever.getName() + ": ");
         String messageStr = scan.nextLine();
         Message message = new Message(messageStr, currentUser, reciever, new Date().toString());
-        File file = new File("./Conversations/" + convoNamingScheme(currentUser.getName(), reciever.getName()));
+        File file = new File(convoNamingScheme(currentUser.getName(), reciever.getName()));
         if (!file.exists()) {
             try {
                 file.createNewFile();

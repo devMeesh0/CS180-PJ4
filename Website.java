@@ -205,7 +205,7 @@ public class Website {
                 break;
                 
             case 2:
-
+                messageCustomerList(scan);
                 break;
         
             case 3:
@@ -242,6 +242,26 @@ public class Website {
     }
 
     
+
+    private static void messageCustomerList(Scanner scan) {
+        User reciever;
+        ArrayList<Customer> customers = listofCustomers();
+        System.out.println("The following is a list of customers that you can message: ");
+        for (int i = 0; i < customers.size(); i++) {
+            System.out.println((i + 1) + ": " + customers.get(i).getName());
+        }
+        int choice = 0;
+        do {
+            System.out.println("Please enter the number of a customer:");
+            choice = scan.nextInt();
+            scan.nextLine();
+        } while (!(choice >= 1 && choice <= customers.size()));
+
+        reciever = customers.get(choice - 1);
+
+        messageMenu(scan, reciever);
+
+    }
 
     private static void messageCustomerSearch(Scanner scan) {
         ArrayList<Customer> customers = listofCustomers();
@@ -521,34 +541,6 @@ public class Website {
         System.out.println("5. Modify User");
         System.out.println("6. Logout");
         
-    }
-
-    public void printStoreList() {
-        // TODO: implement method
-    }
-
-    public void printCustomerList() {
-        // TODO: implement method
-    }
-
-    public User searchCustomersByList() {
-
-        return new User();
-    }
-
-    public User searchStoresByList() {
-
-        return new User();
-    }
-
-    public User searchCustomerByKeyword() {
-
-        return new User();
-    }
-
-    public User searchSellerByKeyword() {
-
-        return new User();
     }
 
     public static ArrayList<Seller> listOfSellers() {

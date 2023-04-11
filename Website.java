@@ -380,6 +380,7 @@ public class Website {
             }
             customerMenu(scan);
         }
+        
         if (currentUser instanceof Seller) {
             ArrayList<Customer> customers = listofCustomers();
             for (int i = 0; i < customers.size(); i++) {

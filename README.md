@@ -16,6 +16,7 @@ In order to run this program, simply copy all java and text files, and ensure th
 - [Customer Class](#customer-class)
 - [User Class](#user-class)
 - [Store Class](#store-class)
+- [Website Class](#website-class)
 
 # Seller Class 
 The Seller class is a subclass of the User superclass. It extends the functionality of the parent class by including additional methods and fields specific to a seller.

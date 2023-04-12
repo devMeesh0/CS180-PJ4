@@ -812,7 +812,7 @@ public class Website {
 
             default:
                 System.out.println("That's not a valid choice. Reloading menu...");
-                sellerMenu(scan);
+                customerMenu(scan);
                 break;
         }
     }

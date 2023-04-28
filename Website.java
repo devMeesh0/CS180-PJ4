@@ -5,19 +5,12 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Reader;
-import java.net.Socket;
-import java.net.SocketException;
-import java.nio.Buffer;
 import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Scanner;
-
-import javax.swing.JOptionPane;
 
 /**
  * CS180 PJ 4
@@ -31,72 +24,45 @@ import javax.swing.JOptionPane;
 public class Website {
 
     public static User currentUser;
-    public static Scanner scanner = new Scanner(System.in); //to be deleted at a later date
-
 
     public static void main(String[] args) {
         //   implement method
+        Scanner scan = new Scanner(System.in);
 
-        
-        JOptionPane.showMessageDialog(null,"Welcome to the Seller Customer Interface!", "Seller-Customer Exchange", JOptionPane.PLAIN_MESSAGE);
-        String hostName = "localhost";
-        String port = "4242";
-        
         try {
-            Socket socket = new Socket(hostName, Integer.parseInt(port));
-            if (socket.isConnected()) {
-                JOptionPane.showMessageDialog(null, "Website connection established!", "Seller-Customer Exchange", JOptionPane.PLAIN_MESSAGE);
-            } 
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream());
-            try {
-                printWelcomeMenu(reader, writer);
-            } catch (InvalidInputException e) {
-                System.out.println(e.getMessage());
-            } catch (FileNotFoundException e) {
-                System.out.println("Incorrect File Error");
-            } catch (IOException e) {
-                System.out.println("IO Exception");
-            }
-
-        } catch (SocketException e) {
-            e.printStackTrace();
+            printWelcomeMenu(scan);
+        } catch (InvalidInputException e) {
+            System.out.println(e.getMessage());
+        } catch (FileNotFoundException e) {
+            System.out.println("Incorrect File Error");
         } catch (IOException e) {
-            e.printStackTrace();
-        } 
+            System.out.println("IO Exception");
+        }
 
-        
-
-        scanner.close();
+        scan.close();
     }
 
-    public static void printWelcomeMenu(BufferedReader reader, PrintWriter writer) throws InvalidInputException, IOException {
+    public static void printWelcomeMenu(Scanner scan) throws InvalidInputException, IOException {
 
         System.out.println("Hello and Welcome to the Seller-Customer interface!");
         System.out.println("Please select an option to begin:");
         System.out.println("1. Login");
         System.out.println("2. Create an account");
         System.out.println("3. Quit");
-        int choice = Integer.parseInt(scanner.nextLine());
-
-        
+        int choice = Integer.parseInt(scan.nextLine());
 
         if (choice == 1 || choice == 2 || choice == 3) {
             switch (choice) {
                 case 1: {
                     //   add login method
-                    writer.write("Login");
-                    writer.println();
-                    writer.flush();
-                    boolean success = login(reader, writer);
+                    boolean success = login(scan);
                     if (success) {
                         System.out.println("You have successfully logged in!");
                         if (currentUser instanceof Customer) {
-                            customerMenu(reader, writer);
+                            customerMenu(scan);
                         }
                         if (currentUser instanceof Seller) {
-                            sellerMenu(reader, writer);
+                            sellerMenu(scan);
                         }
                     }
                     if (!success) {
@@ -106,20 +72,14 @@ public class Website {
                 }
 
                 case 2: {
-                    writer.write("createAccount");
-                    writer.println();
-                    writer.flush();
                     //   add create account method
-                    createAccount(reader, writer);
+                    createAccount(scan, "user.txt");
                     break;
                 }
 
                 case 3: {
-                    writer.write("quit");
-                    writer.println();
-                    writer.flush();
                     System.out.println("Thanks for using the interface!");
-                    scanner.close();
+                    scan.close();
                     break;
                 }
             }
@@ -127,34 +87,31 @@ public class Website {
             throw new InvalidInputException("The choice entered was invalid!");
     }
 
-    public static boolean login(BufferedReader reader, PrintWriter writer) throws IOException {
+    public static boolean login(Scanner scanner) throws IOException {
         String username = null;
         String password = null;
 
         while (true) {
-            System.out.print("Enter username (or -1 to quit): "); // @nathan
-            username = scanner.nextLine(); // @nathan
-            writer.write(username);
-            writer.println();
-            writer.flush();
-            
+            System.out.print("Enter username (or -1 to quit): ");
+            username = scanner.nextLine();
             if (username.equals("-1")) {
                 return false; // Quit
             }
-            
 
-            System.out.print("Enter password: "); // @nathan
-            password = scanner.nextLine(); // @nathan
+            System.out.print("Enter password: ");
+            password = scanner.nextLine();
 
-            writer.write(password);
-            writer.println();
-            writer.flush();
-
-            String next = reader.readLine();
-
-            if (Boolean.parseBoolean(next)) {
-                setUser(reader.readLine().split(","));
-                return true;
+            try (BufferedReader br = new BufferedReader(new FileReader("user.txt"))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] tokens = line.split(",");
+                    if (tokens[1].equals(username) && tokens[2].equals(password)) {
+                        setUser(tokens);
+                        return true; // Success
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
             System.out.println("Invalid username or password. Please try again.");
@@ -173,8 +130,12 @@ public class Website {
         }
     }
 
-    
-    public static void createAccount(BufferedReader reader, PrintWriter writer) throws IOException {
+    public String[] getStores(Scanner scan) {
+        //   implement method
+        return new String[0];
+    }
+
+    public static void createAccount(Scanner scanner, String fileName) {
         // Prompt the user to enter their username, name, password, and account type
         System.out.print("Enter your full name: ");
         String name = scanner.nextLine();
@@ -203,29 +164,27 @@ public class Website {
             accountType = scanner.nextLine().trim().toLowerCase();
         } while (!accountType.equals("seller") && !accountType.equals("customer"));
 
-
-        writer.write(name + "," + username + "," + password + "," + phoneNum + "," + address + "," + accountType);
-        writer.println();
-        writer.flush();
-
-        String result = reader.readLine();
-
-        if (result.equals("created")) {
+        try (PrintWriter writer = new PrintWriter(new FileOutputStream(new File("user.txt"), true))) {
+            writer.append(accountType + "," + username + "," + password + "," + name + "," + 0 + "," + phoneNum + ","
+                    + address);
+            writer.println();
+            writer.flush();
+            System.out.println("User created! You are now logged in");
             if (accountType.equals("seller")) {
                 currentUser = new Seller(username, password, name, 0, Integer.parseInt(phoneNum), address);
-                sellerMenu(reader, writer);
+                sellerMenu(scanner);
             } else if (accountType.equals("customer")) {
                 currentUser = new Customer(username, password, name, 0, Integer.parseInt(phoneNum), address);
-                customerMenu(reader, writer);
+                customerMenu(scanner);
             }
-        } else if (result.equals("error")) {
-            // add error opening file JOPtionPane Message
+        } catch (FileNotFoundException e) {
+            System.err.println("Error opening file for writing: " + fileName);
+            e.printStackTrace();
         }
 
-       
     }
 
-    public static void sellerMenu(BufferedReader reader, PrintWriter writer) throws IOException {
+    public static void sellerMenu(Scanner scan) {
         int choice;
         System.out.println("Welcome Seller " + currentUser.getName() + "!");
         System.out.println("Please Select an action:  ");
@@ -237,37 +196,36 @@ public class Website {
         System.out.println("6. Modify User");
         System.out.println("7. Delete Account");
         System.out.println("8. Logout");
-        choice = scanner.nextInt();
-        scanner.nextLine();
+        choice = scan.nextInt();
+        scan.nextLine();
 
         switch (choice) {
             case 1:
-                System.out.println("gets here 1");
-                messageCustomerSearch(reader, writer);
+                messageCustomerSearch(scan);
                 break;
                 
             case 2:
-                messageCustomerList(reader, writer);
+                messageCustomerList(scan);
                 break;
         
             case 3:
-                createStore(reader, writer);
+                createStore(scan);
                 break;
 
             case 4:
-                blockUser(reader, writer);
+                blockUser(scan);
                 break;
 
             case 5:
-                setInvisible(reader, writer);
+                setInvisible(scan);
                 break;
 
             case 6:
-                modifyUser(reader, writer);
+                modifyUser(scan);
                 break;
 
             case 7:
-                deleteUser(reader, writer);
+                deleteUser(scan);
                 break;
 
             case 8:
@@ -277,7 +235,7 @@ public class Website {
 
             default:
                 System.out.println("That's not a valid choice. Reloading menu...");
-                sellerMenu(reader, writer);
+                sellerMenu(scan);
                 break;
         }
 
@@ -285,44 +243,76 @@ public class Website {
 
     
 
-    private static void deleteUser(BufferedReader reader, PrintWriter writer) throws IOException {
+    private static void deleteUser(Scanner scan) {
         System.out.println("ARE YOU SURE YOU WANT TO DELETE ACCOUNT? (Y/N)");
-        String choice = scanner.nextLine().toLowerCase();
+        String choice = scan.nextLine().toLowerCase();
 
         if (choice.equals("y")) {
-            writer.write("deleteUser");
-            writer.println();
-            writer.flush();
-
-            writer.write(currentUser.name);
-            writer.println();
-            writer.flush();
-
-            System.out.println("File successfully updated.");
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader("user.txt"));
+                String[] lines = reader.lines().toArray(String[]::new);
+                reader.close();
+                int count = 1;
+                for (int i = 0; i < lines.length; i++) {
+                    String[] tokens = lines[i].split(",");
+                    if (tokens[3].equals(currentUser.getName())) {
+                        break;
+                    }
+                    count++;
+                }
+    
+                int lineNumber = count;
+                
+                           
+                lines[lineNumber - 1] = "";
+                String[] newLines = new String[lines.length - 1];
+    
+                for (int i = 0; i < lines.length; i++) {
+                    if (i < lineNumber - 1) {
+                        newLines[i] = lines[i];
+                    } else if (i == lineNumber - 1) {
+    
+                    } else if (i > lineNumber - 1) {
+                        newLines[i - 1] = lines[i];
+                    }
+                }
+                
+                PrintWriter writer = new PrintWriter(new FileWriter("user.txt"));
+                for (String line : newLines) {
+                    writer.println(line);
+                }
+                writer.close();
+                
+                System.out.println("File successfully updated.");
+            } catch (FileNotFoundException e) {
+                System.out.println("The File does not exist!");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             System.out.println("Goodbye!");
         } else {
             if (currentUser instanceof Seller) {
-                sellerMenu(reader, writer);
+                sellerMenu(scan);
             }
             if (currentUser instanceof Customer) {
-                customerMenu(reader, writer);
+                customerMenu(scan);
             }
         }
     }
 
-    private static void modifyUser(BufferedReader reader, PrintWriter writer) throws IOException {
+    private static void modifyUser(Scanner scan) {
         currentUser.modifyUser();
         if (currentUser instanceof Seller) {
-            sellerMenu(reader, writer);
+            sellerMenu(scan);
         }
         if (currentUser instanceof Customer) {
-            customerMenu(reader, writer);
+            customerMenu(scan);
         }
     }
 
-    private static void setInvisible(BufferedReader reader, PrintWriter writer) throws IOException {
+    private static void setInvisible(Scanner scan) {
         System.out.println("Please enter the name of the User you would like to set yourself invisible for:");
-        String name = scanner.nextLine().toLowerCase();
+        String name = scan.nextLine().toLowerCase();
 
         if (currentUser instanceof Customer) {
             ArrayList<Seller> sellers = listOfSellers();
@@ -342,10 +332,10 @@ public class Website {
                     }
                 }
             }
-            customerMenu(reader, writer);
+            customerMenu(scan);
         } 
         if (currentUser instanceof Seller) {
-            ArrayList<Customer> customers = listofCustomers(reader, writer);
+            ArrayList<Customer> customers = listofCustomers();
             for (int i = 0; i < customers.size(); i++) {
                 if (customers.get(i).getName().equals(name)) {
                     File file = new File("invisible.txt");
@@ -362,13 +352,13 @@ public class Website {
                     }
                 }
             }
-            sellerMenu(reader, writer);
+            sellerMenu(scan);
         }
     }
 
-    private static void blockUser(BufferedReader reader, PrintWriter writer) throws IOException {
+    private static void blockUser(Scanner scan) {
         System.out.println("Please enter the name of the User you would like to block:");
-        String name = scanner.nextLine().toLowerCase();
+        String name = scan.nextLine().toLowerCase();
 
         if (currentUser instanceof Customer) {
             ArrayList<Seller> sellers = listOfSellers();
@@ -388,11 +378,11 @@ public class Website {
                     }
                 }
             }
-            customerMenu(reader, writer);
+            customerMenu(scan);
         }
         
         if (currentUser instanceof Seller) {
-            ArrayList<Customer> customers = listofCustomers(reader, writer);
+            ArrayList<Customer> customers = listofCustomers();
             for (int i = 0; i < customers.size(); i++) {
                 if (customers.get(i).getName().equals(name)) {
                     File file = new File("blocked.txt");
@@ -409,19 +399,19 @@ public class Website {
                     }
                 }
             }
-            sellerMenu(reader, writer);
+            sellerMenu(scan);
         }
     }
 
-    private static boolean isInvisibleToYou(BufferedReader reader, PrintWriter writer, String otherName) {
+    private static boolean isInvisibleToYou(User other) {
         try {
-            BufferedReader readerB = new BufferedReader(new FileReader("invisible.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("invisible.txt"));
 
             String line;
             try {
-                while ((line = readerB.readLine()) != null) {
+                while ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
-                    if (tokens[1].equals(currentUser.getName()) && tokens[0].equalsIgnoreCase(otherName)) {
+                    if (tokens[1].equals(currentUser.getName()) && tokens[0].equals(other.getName())) {
                         return true;
                     }
                 }
@@ -436,15 +426,15 @@ public class Website {
         return false;
     }
 
-    private static boolean hasBlockedYou(BufferedReader reader, PrintWriter writer, String otherName) {
+    private static boolean hasBlockedYou(User other) {
         try {
-            BufferedReader readerB = new BufferedReader(new FileReader("blocked.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("blocked.txt"));
 
             String line;
             try {
-                while ((line = readerB.readLine()) != null) {
+                while ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
-                    if (tokens[1].equals(currentUser.getName()) && tokens[0].equalsIgnoreCase(otherName)) {
+                    if (tokens[1].equals(currentUser.getName()) && tokens[0].equals(other.getName())) {
                         return true;
                     }
                 }
@@ -459,13 +449,13 @@ public class Website {
         return false;
     }
 
-    private static void createStore(BufferedReader reader, PrintWriter writer) throws IOException {
+    private static void createStore(Scanner scan) {
         System.out.print("Enter store name: ");
-        String name = scanner.nextLine();
+        String name = scan.nextLine();
         System.out.print("Enter store type (restauraunt, grocery store, etc.): ");
-        String type = scanner.nextLine();
+        String type = scan.nextLine();
         System.out.print("Enter store address (no commas): ");
-        String address = scanner.nextLine();
+        String address = scan.nextLine();
         
         // write to file
         try {
@@ -479,66 +469,41 @@ public class Website {
             System.out.println("Error writing to file.");
             e.printStackTrace();
         }
-        sellerMenu(reader, writer);
+        sellerMenu(scan);
     }
 
-    private static void messageCustomerList(BufferedReader reader, PrintWriter writer) throws IOException {
+    private static void messageCustomerList(Scanner scan) {
         User reciever;
-        ArrayList<Customer> customers = listofCustomers(reader, writer);
-
+        ArrayList<Customer> customers = listofCustomers();
         System.out.println("The following is a list of customers that you can message: ");
         for (int i = 0; i < customers.size(); i++) {
-            if (!isInvisibleToYou(reader, writer, customers.get(i).getName())) {
-                System.out.println((i + 1) + ": " + customers.get(i).getName());
-            } else {
-                System.out.println((i + 1) + ": INVISIBLE");
-            }
+            System.out.println((i + 1) + ": " + customers.get(i).getName());
         }
         int choice = 0;
         do {
             System.out.println("Please enter the number of a customer:");
-            choice = scanner.nextInt();
-            scanner.nextLine();
+            choice = scan.nextInt();
+            scan.nextLine();
         } while (!(choice >= 1 && choice <= customers.size()));
 
         reciever = customers.get(choice - 1);
-        
-        if (isInvisibleToYou(reader, writer, reciever.getName())) {
-            System.out.println("That user is invisible to you! Please select another customer.");
-            messageCustomerList(reader, writer);
-        } else if (hasBlockedYou(reader, writer, reciever.getName())) {
-            System.out.println("That user has blocked you! Please select another customer.");
-            messageCustomerList(reader, writer);
-        } else {
-            messageMenu(reader, writer, reciever);
-        }
+
+        messageMenu(scan, reciever);
 
     }
 
-    private static void messageCustomerSearch(BufferedReader reader, PrintWriter writer) throws IOException {
-        ArrayList<Customer> customers = listofCustomers(reader, writer);
+    private static void messageCustomerSearch(Scanner scan) {
+        ArrayList<Customer> customers = listofCustomers();
         String searchCustomer;
         boolean found = false;
         Customer foundCust = null;
-        boolean blocked = false;
 
         do {
             System.out.print("Enter the name of the customer to search for: ");
-            searchCustomer = scanner.nextLine();
+            searchCustomer = scan.nextLine();
 
             for (Customer customer : customers) {
                 if (customer.getName().equalsIgnoreCase(searchCustomer)) {
-                    if (isInvisibleToYou(reader, writer, searchCustomer)) {
-                        found = false;
-                        break;
-                    }
-                    
-                    if (hasBlockedYou(reader, writer, searchCustomer)) {
-                        found = false;
-                        blocked = true;
-                        break;
-                    }
-
                     found = true;
                     foundCust = customer;
                     break;
@@ -546,24 +511,21 @@ public class Website {
             }
 
             if (!found) {
-                if (!blocked) {
-                    System.out.println("Customer " + searchCustomer + " could not be found.");
-                } else {
-                    System.out.println("Customer " + searchCustomer + " has blocked you!");
-                }
+                System.out.println("Customer " + searchCustomer + " could not be found.");
+
                 System.out.println("Enter 1 to search again, or 2 to quit to main menu: ");
-                int choice = Integer.parseInt(scanner.nextLine());
+                int choice = scan.nextInt();
+                scan.nextLine();
 
                 if (choice == 2) {
-                    customerMenu(reader, writer);
+                    messageCustomerSearch(scan);
                     break;
                 }
-                
             }
 
             if (found) {
                 if (foundCust != null) {
-                    messageMenu(reader, writer, foundCust);
+                    messageMenu(scan, foundCust);
                 } else {
                     System.out.println("There was an error with the customer search.");
                 }
@@ -572,9 +534,8 @@ public class Website {
         } while (!found);
 
     }
-    
 
-    private static void messageMenu(BufferedReader reader, PrintWriter writer, User reciever) throws IOException {
+    private static void messageMenu(Scanner scan, User reciever) {
         boolean quit = false;
 
         while (!quit) {
@@ -587,29 +548,29 @@ public class Website {
             System.out.println("0. Main Menu");
 
             // read user input
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // consume the newline character
+            int choice = scan.nextInt();
+            scan.nextLine(); // consume the newline character
 
             switch (choice) {
                 case 0:
                     quit = true;
                     if (currentUser instanceof Customer) {
-                        customerMenu(reader, writer);
+                        customerMenu(scan);
                     } else if (currentUser instanceof Seller) {
-                        sellerMenu(reader, writer);
+                        sellerMenu(scan);
                     }
                     break;
                 case 1:
-                    sendNewMessage(reciever);
+                    sendNewMessage(scan, reciever);
                     break;
                 case 2:
-                    viewMessageHistory(reciever);
+                    viewMessageHistory(scan, reciever);
                     break;
                 case 3:
-                    editMessage(reader, writer, reciever);
+                    editMessage(scan, reciever);
                     break;
                 case 4:
-                    deleteMessage(reader, writer, reciever);
+                    deleteMessage(scan, reciever);
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -620,13 +581,13 @@ public class Website {
         
     }
 
-    private static void deleteMessage(BufferedReader reader, PrintWriter writer, User reciever) throws IOException {
+    private static void deleteMessage(Scanner scan, User reciever) {
         System.out.println("You selected: Delete a message");
         try {
-            BufferedReader readerB = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
+            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
                 reciever.getName())));
-            String[] lines = readerB.lines().toArray(String[]::new);
-            readerB.close();
+            String[] lines = reader.lines().toArray(String[]::new);
+            reader.close();
             int count = 1;
 
             System.out.println("Messages:");
@@ -645,8 +606,8 @@ public class Website {
 
             int lineNumber;
             System.out.println("Enter the number of the message you would like to delete:");
-            lineNumber = scanner.nextInt();
-            scanner.nextLine();
+            lineNumber = scan.nextInt();
+            scan.nextLine();
 
             int count2 = 1;
             for (int i = 0; i < lines.length; i++) {
@@ -674,29 +635,29 @@ public class Website {
                 }
             }
             
-            PrintWriter writerB = new PrintWriter(new FileWriter(convoNamingScheme(currentUser.getName(),
+            PrintWriter writer = new PrintWriter(new FileWriter(convoNamingScheme(currentUser.getName(),
                 reciever.getName())));
             for (String line : newLines) {
-                writerB.println(line);
+                writer.println(line);
             }
-            writerB.close();
+            writer.close();
             
             System.out.println("File successfully updated.");
         } catch (FileNotFoundException e) {
             System.out.println("The conversation does not exist!");
-            messageMenu(reader, writer, reciever);
+            messageMenu(scan, reciever);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void editMessage(BufferedReader reader, PrintWriter writer, User reciever) throws IOException {
+    private static void editMessage(Scanner scan, User reciever) {
         System.out.println("You selected: Edit a message");
         try {
-            BufferedReader readerB = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
+            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
                 reciever.getName())));
-            String[] lines = readerB.lines().toArray(String[]::new);
-            readerB.close();
+            String[] lines = reader.lines().toArray(String[]::new);
+            reader.close();
             int count = 1;
 
             System.out.println("Messages:");
@@ -715,8 +676,8 @@ public class Website {
 
             int lineNumber;
             System.out.println("Enter the number of the message you would like to change:");
-            lineNumber = scanner.nextInt();
-            scanner.nextLine();
+            lineNumber = scan.nextInt();
+            scan.nextLine();
 
             int count2 = 1;
             for (int i = 0; i < lines.length; i++) {
@@ -731,29 +692,29 @@ public class Website {
             }
             
             System.out.printf("Enter the new content for line %d:%n", count2);
-            String newLineContent = scanner.nextLine();
+            String newLineContent = scan.nextLine();
             
             lines[lineNumber - 1] = newLineContent + "," + currentUser.getName() + "," 
                 + new Date().toString() + "," + true;
             
-            PrintWriter writerB = new PrintWriter(new FileWriter(convoNamingScheme(currentUser.getName(),
+            PrintWriter writer = new PrintWriter(new FileWriter(convoNamingScheme(currentUser.getName(),
                 reciever.getName())));
             for (String line : lines) {
-                writerB.println(line);
+                writer.println(line);
             }
-            writerB.close();
+            writer.close();
             
             System.out.println("File successfully updated.");
         } catch (FileNotFoundException e) {
             System.out.println("The conversation does not exist!");
-            messageMenu(reader, writer, reciever);
+            messageMenu(scan, reciever);
         } catch (IOException e) {
             e.printStackTrace();
         }
         
     }
 
-    private static void viewMessageHistory(User reciever) {
+    private static void viewMessageHistory(Scanner scan, User reciever) {
         System.out.println("You selected: View message history");
         try {
             BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
@@ -774,13 +735,13 @@ public class Website {
             e.printStackTrace();
         }
         System.out.println("Press enter to continue");
-        scanner.nextLine();
+        scan.nextLine();
     }
 
-    private static void sendNewMessage(User reciever) {
+    private static void sendNewMessage(Scanner scan, User reciever) {
         System.out.println("You selected: Send a new message");
         System.out.println("Enter the message you would like to send to " + reciever.getName() + ": ");
-        String messageStr = scanner.nextLine();
+        String messageStr = scan.nextLine();
         Message message = new Message(messageStr, currentUser, reciever, new Date().toString());
         File file = new File(convoNamingScheme(currentUser.getName(), reciever.getName()));
         if (!file.exists()) {
@@ -804,7 +765,7 @@ public class Website {
         }
     }
 
-    public static void customerMenu(BufferedReader reader, PrintWriter writer) throws IOException {
+    public static void customerMenu(Scanner scan) {
         int choice;
         System.out.println("Welcome Customer " + currentUser.getName() + "!");
         System.out.println("Please Select an action: ");
@@ -815,33 +776,33 @@ public class Website {
         System.out.println("5. Modify User");
         System.out.println("6. Delete User");
         System.out.println("7. Logout");
-        choice = scanner.nextInt();
-        scanner.nextLine();
+        choice = scan.nextInt();
+        scan.nextLine();
 
         
         switch (choice) {
             case 1:
-                messageSellerSearch(reader, writer);
+                messageSellerSearch(scan);
                 break;
                 
             case 2:
-                messageSellerList(reader, writer);
+                messageSellerList(scan);
                 break;
         
             case 3:
-                blockUser(reader, writer);
+                blockUser(scan);
                 break;
 
             case 4:
-                setInvisible(reader, writer);
+                setInvisible(scan);
                 break;
 
             case 5:
-                modifyUser(reader, writer);
+                modifyUser(scan);
                 break;
 
             case 6:
-                deleteUser(reader, writer);
+                deleteUser(scan);
                 break;
 
             case 7:
@@ -851,22 +812,22 @@ public class Website {
 
             default:
                 System.out.println("That's not a valid choice. Reloading menu...");
-                customerMenu(reader, writer);
+                customerMenu(scan);
                 break;
         }
     }
 
-    private static void messageSellerList(BufferedReader reader, PrintWriter writer) throws IOException {
+    private static void messageSellerList(Scanner scan) {
         User reciever = null;
         ArrayList<Store> stores = new ArrayList<Store>();
         ArrayList<Seller> sellers = listOfSellers();
 
         try {
-            BufferedReader readerB = new BufferedReader(new FileReader("stores.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("stores.txt"));
             
             String line;
             try {
-                while ((line = readerB.readLine()) != null) {
+                while ((line = reader.readLine()) != null) {
                     String[] tokens = line.split(",");
 
                     stores.add(new Store(tokens[0], tokens[1], tokens[2], tokens[3]));
@@ -883,8 +844,8 @@ public class Website {
             int choice = 0;
             do {
                 System.out.println("Please enter the number of a store:");
-                choice = scanner.nextInt();
-                scanner.nextLine();
+                choice = scan.nextInt();
+                scan.nextLine();
             } while (!(choice >= 1 && choice <= stores.size()));
 
             String storeSellerName = stores.get(choice - 1).getOwnerUsername();
@@ -899,33 +860,22 @@ public class Website {
             //   Auto-generated catch block
             e.printStackTrace();
         }
-        messageMenu(reader, writer, reciever);
+        messageMenu(scan, reciever);
 
     }
 
-    private static void messageSellerSearch(BufferedReader reader, PrintWriter writer) throws IOException {
+    private static void messageSellerSearch(Scanner scan) {
         ArrayList<Seller> sellers = listOfSellers();
         String searchSeller;
         boolean found = false;
         Seller foundSell = null;
-        boolean blocked = false;
 
         do {
             System.out.print("Enter the name of the Sellers to search for: ");
-            searchSeller = scanner.nextLine();
+            searchSeller = scan.nextLine();
 
             for (Seller seller : sellers) {
                 if (seller.getName().equalsIgnoreCase(searchSeller)) {
-                    if (isInvisibleToYou(reader, writer, searchSeller)) {
-                        found = false;
-                        break;
-                    }
-
-                    if (hasBlockedYou(reader, writer, searchSeller)) {
-                        found = false;
-                        blocked = true;
-                    }
-
                     found = true;
                     foundSell = seller;
                     break;
@@ -933,25 +883,21 @@ public class Website {
             }
 
             if (!found) {
-                if (!blocked) {
-                    System.out.println("Seller " + searchSeller + " could not be found.");
-                } else {
-                    System.out.println("Seller " + searchSeller + " has blocked you!" );
-                }
+                System.out.println("Seller " + searchSeller + " could not be found.");
 
                 System.out.println("Enter 1 to search again, or 2 to quit to main menu: ");
-                int choice = scanner.nextInt();
-                scanner.nextLine();
+                int choice = scan.nextInt();
+                scan.nextLine();
 
                 if (choice == 2) {
-                    messageSellerSearch(reader, writer);
+                    messageSellerSearch(scan);
                     break;
                 }
             }
 
             if (found) {
                 if (foundSell != null) {
-                    messageMenu(reader, writer, foundSell);
+                    messageMenu(scan, foundSell);
                 } else {
                     System.out.println("There was an error with the Seller search.");
                 }
@@ -1003,31 +949,46 @@ public class Website {
         }
     }
 
-    public static ArrayList<Customer> listofCustomers(BufferedReader reader, PrintWriter writer) throws IOException {
-        writer.write("listOfCustomers");
-        writer.println();
-        writer.flush();
-
-        String sizeSTR = reader.readLine();
-        int size = Integer.parseInt(sizeSTR);
-        
+    public static ArrayList<Customer> listofCustomers() {
         ArrayList<Customer> customers = new ArrayList<>();
-
-        if (size != -1 && size != -2) {
-            for (int i = 0; i < size; i++) {
-                String[] tokens = reader.readLine().split(",");
-                String userName = tokens[0];
-                String password = tokens[1];
-                String name = tokens[2].toLowerCase();
-                int numMessages = Integer.parseInt(tokens[3]);
-                int phoneNum = Integer.parseInt(tokens[4]);
-                String address = tokens[5];
-                Customer customer = new Customer(userName, password, name, numMessages, phoneNum, address);
-                customers.add(customer);
+        File f = new File("user.txt");
+        FileReader fr = null;
+        BufferedReader br = null;
+        try {
+            fr = new FileReader(f);
+            br = new BufferedReader(fr);
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                String[] part = line.split(",");
+                String userType = part[0];
+                if (userType.equals("customer")) {
+                    String userName = part[1];
+                    String password = part[2];
+                    String name = part[3].toLowerCase();
+                    int numMessages = Integer.parseInt(part[4]);
+                    int phoneNum = Integer.parseInt(part[5]);
+                    String address = part[6];
+                    Customer customer = new Customer(userName, password, name, numMessages, phoneNum, address);
+                    customers.add(customer);
+                }
+            }
+            return customers; // need to change
+        } catch (FileNotFoundException e) {
+            return null;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+                if (fr != null) {
+                    fr.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-
-        return customers;
     }
     public static String convoNamingScheme(String str1, String str2) {
         String[] arr = {str1, str2};

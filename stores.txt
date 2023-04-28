@@ -1,1 +1,2 @@
 bob,Store,Builder,no address
+John Tom,Store,restaurant,800

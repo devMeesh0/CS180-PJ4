@@ -1,3 +1,7 @@
 customer,ameesh@gmail.com,pass,AMeesh,0,1234567890,500
 seller,bob@bob.bob,pass,bob,0,1234567890,500
 customer,rob@rob.rob,pass,rob,0,1234567890,500
+seller,username,password,Name,0,0123456789,100
+customer,username2,password,Name2,0,0123456789,200
+seller,computer,computer,Com Puter,0,0123456789,600
+seller,JT,password,John Tom,0,0123456789,700

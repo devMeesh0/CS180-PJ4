@@ -1,0 +1,3 @@
+customer,ameesh@gmail.com,pass,AMeesh,0,1234567890,500
+seller,bob@bob.bob,pass,bob,0,1234567890,500
+customer,rob@rob.rob,pass,rob,0,1234567890,500

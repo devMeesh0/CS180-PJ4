@@ -1,1 +1,2 @@
 bob,Store,Builder,no address
+bob,a new store,retail,urmomLane

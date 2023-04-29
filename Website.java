@@ -325,7 +325,7 @@ public class Website {
         String name = scanner.nextLine().toLowerCase();
 
         if (currentUser instanceof Customer) {
-            ArrayList<Seller> sellers = listOfSellers();
+            ArrayList<Seller> sellers = listOfSellers(reader, writer);
             for (int i = 0; i < sellers.size(); i++) {
                 if (sellers.get(i).getName().equals(name)) {
                     File file = new File("invisible.txt");
@@ -370,93 +370,91 @@ public class Website {
         System.out.println("Please enter the name of the User you would like to block:");
         String name = scanner.nextLine().toLowerCase();
 
-        if (currentUser instanceof Customer) {
-            ArrayList<Seller> sellers = listOfSellers();
+        writer.write("blockUser");
+        writer.println();
+        writer.flush();
+
+        writer.write(currentUser.getName());
+        writer.println();
+        writer.flush();
+
+        writer.write(name);
+        writer.println();
+        writer.flush();
+        
+        if (currentUser instanceof Customer) { 
+            ArrayList<Seller> sellers = listOfSellers(reader, writer);
+            writer.write("customer");
+            writer.println();
+            writer.flush();
+
+            writer.write(sellers.size());
+            writer.println();
+            writer.flush();
+
             for (int i = 0; i < sellers.size(); i++) {
-                if (sellers.get(i).getName().equals(name)) {
-                    File file = new File("blocked.txt");
-                    FileWriter fw;
-                    try {
-                        fw = new FileWriter(file, true);
-                        PrintWriter pw = new PrintWriter(fw);
-                        pw.println(currentUser.getName() + "," + name);
-                        pw.close();
-                        System.out.println("The user has been blocked.");
-                    } catch (IOException e) {
-                        //   Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
+                writer.write(sellers.get(i).toString());
+                writer.println();
+                writer.flush();
             }
+
+            System.out.println("The user has been blocked.");
             customerMenu(reader, writer);
         }
         
         if (currentUser instanceof Seller) {
             ArrayList<Customer> customers = listofCustomers(reader, writer);
+            writer.write("seller");
+            writer.println();
+            writer.flush();
+
+            writer.write(customers.size());
+            writer.println();
+            writer.flush();
+
             for (int i = 0; i < customers.size(); i++) {
-                if (customers.get(i).getName().equals(name)) {
-                    File file = new File("blocked.txt");
-                    FileWriter fw;
-                    try {
-                        fw = new FileWriter(file, true);
-                        PrintWriter pw = new PrintWriter(fw);
-                        pw.println(currentUser.getName() + "," + name);
-                        pw.close();
-                        System.out.println("The user has been blocked.");
-                    } catch (IOException e) {
-                        //   Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
+                writer.write(customers.get(i).toString());
+                writer.println();
+                writer.flush();
             }
+
+            System.out.println("The user has been blocked.");
             sellerMenu(reader, writer);
         }
     }
 
-    private static boolean isInvisibleToYou(BufferedReader reader, PrintWriter writer, String otherName) {
-        try {
-            BufferedReader readerB = new BufferedReader(new FileReader("invisible.txt"));
+    private static boolean isInvisibleToYou(BufferedReader reader, PrintWriter writer, String otherName) throws IOException {
+       writer.write("isInvisibleToYou");
+       writer.println();
+       writer.flush();
 
-            String line;
-            try {
-                while ((line = readerB.readLine()) != null) {
-                    String[] tokens = line.split(",");
-                    if (tokens[1].equals(currentUser.getName()) && tokens[0].equalsIgnoreCase(otherName)) {
-                        return true;
-                    }
-                }
-            } catch (IOException e) {
-                //   Auto-generated catch block
-                e.printStackTrace();
-            }
+       writer.write(otherName);
+       writer.println();
+       writer.flush();
 
-        } catch (FileNotFoundException e) {
-            System.out.println("FileNotFound!");
-        }
-        return false;
+       writer.write(currentUser.getName());
+       writer.println();
+       writer.flush();
+
+       return Boolean.parseBoolean(reader.readLine());
+
+
     }
 
-    private static boolean hasBlockedYou(BufferedReader reader, PrintWriter writer, String otherName) {
-        try {
-            BufferedReader readerB = new BufferedReader(new FileReader("blocked.txt"));
+    private static boolean hasBlockedYou(BufferedReader reader, PrintWriter writer, String otherName) throws IOException {
+        writer.write("hasBlockedYou");
+        writer.println();
+        writer.flush();
 
-            String line;
-            try {
-                while ((line = readerB.readLine()) != null) {
-                    String[] tokens = line.split(",");
-                    if (tokens[1].equals(currentUser.getName()) && tokens[0].equalsIgnoreCase(otherName)) {
-                        return true;
-                    }
-                }
-            } catch (IOException e) {
-                //   Auto-generated catch block
-                e.printStackTrace();
-            }
+        writer.write(otherName);
+        writer.println();
+        writer.flush();
 
-        } catch (FileNotFoundException e) {
-            System.out.println("FileNotFound!");
-        }
-        return false;
+        writer.write(currentUser.getName());
+        writer.println();
+        writer.flush();
+
+        return Boolean.parseBoolean(reader.readLine());
     }
 
     private static void createStore(BufferedReader reader, PrintWriter writer) throws IOException {
@@ -466,19 +464,24 @@ public class Website {
         String type = scanner.nextLine();
         System.out.print("Enter store address (no commas): ");
         String address = scanner.nextLine();
+
+        writer.write("createStore");
+        writer.println();
+        writer.flush();
+
+        writer.write(currentUser.getName() + "," + name + "," + type + "," + address);
+        writer.println();
+        writer.flush();
         
-        // write to file
-        try {
-            File file = new File("stores.txt");
-            FileWriter fw = new FileWriter(file, true);
-            PrintWriter pw = new PrintWriter(fw);
-            pw.println(currentUser.getName() + "," + name + "," + type + "," + address);
-            pw.close();
-            System.out.println("Store added to file.");
-        } catch (IOException e) {
-            System.out.println("Error writing to file.");
-            e.printStackTrace();
+        int complete = Integer.parseInt(reader.readLine());
+
+        if (complete == 200) {
+            JOptionPane.showMessageDialog(null,"The Store has been added!", "Seller-Customer interchange", JOptionPane.INFORMATION_MESSAGE);
         }
+        if (complete == 500) {
+            JOptionPane.showMessageDialog(null, "There was an issue saving the store, please try again", "Seller-Customer interchange", JOptionPane.INFORMATION_MESSAGE);
+        }
+
         sellerMenu(reader, writer);
     }
 
@@ -600,10 +603,10 @@ public class Website {
                     }
                     break;
                 case 1:
-                    sendNewMessage(reciever);
+                    sendNewMessage(reader, writer, reciever);
                     break;
                 case 2:
-                    viewMessageHistory(reciever);
+                    viewMessageHistory(reader, writer, reciever);
                     break;
                 case 3:
                     editMessage(reader, writer, reciever);
@@ -620,7 +623,7 @@ public class Website {
         
     }
 
-    private static void deleteMessage(BufferedReader reader, PrintWriter writer, User reciever) throws IOException {
+    private static void deleteMessage(BufferedReader reader, PrintWriter writer, User reciever) throws IOException { //NET IO AFTER MERGE
         System.out.println("You selected: Delete a message");
         try {
             BufferedReader readerB = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
@@ -678,7 +681,7 @@ public class Website {
                 reciever.getName())));
             for (String line : newLines) {
                 writerB.println(line);
-            }
+            }   
             writerB.close();
             
             System.out.println("File successfully updated.");
@@ -690,7 +693,7 @@ public class Website {
         }
     }
 
-    private static void editMessage(BufferedReader reader, PrintWriter writer, User reciever) throws IOException {
+    private static void editMessage(BufferedReader reader, PrintWriter writer, User reciever) throws IOException {  //NET IO AFTER MERGE
         System.out.println("You selected: Edit a message");
         try {
             BufferedReader readerB = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
@@ -753,13 +756,13 @@ public class Website {
         
     }
 
-    private static void viewMessageHistory(User reciever) {
+    private static void viewMessageHistory(BufferedReader reader, PrintWriter writer, User reciever) { //NET IO AFTER MERGE
         System.out.println("You selected: View message history");
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
+            BufferedReader readerB = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
                 reciever.getName())));
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = readerB.readLine()) != null) {
                 String[] tokens = line.split(",");
                 System.out.print(tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
                 if (tokens[3].equals("true")) {
@@ -777,31 +780,35 @@ public class Website {
         scanner.nextLine();
     }
 
-    private static void sendNewMessage(User reciever) {
+    private static void sendNewMessage(BufferedReader reader, PrintWriter writer, User reciever) throws NumberFormatException, IOException {
         System.out.println("You selected: Send a new message");
         System.out.println("Enter the message you would like to send to " + reciever.getName() + ": ");
         String messageStr = scanner.nextLine();
         Message message = new Message(messageStr, currentUser, reciever, new Date().toString());
-        File file = new File(convoNamingScheme(currentUser.getName(), reciever.getName()));
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+        writer.write("sendNewMessage");
+        writer.println();
+        writer.flush();
+
+        writer.write(currentUser.getName());
+        writer.println();
+        writer.flush();
+
+        writer.write(reciever.getName());
+        writer.println();
+        writer.flush();
+
+        writer.write(message.toString());
+        writer.println();
+        writer.flush();
+
+        int complete = Integer.parseInt(reader.readLine());
+        
+        if (complete == 200) {
+            System.out.println("Message Sent!");
         }
 
-        try {
-            PrintWriter writer = new PrintWriter(new FileOutputStream(file, true));
-            writer.append(message.toString());
-            writer.println();
-            writer.flush();
-            System.out.println("Message Sent!");
-            writer.close();
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
     public static void customerMenu(BufferedReader reader, PrintWriter writer) throws IOException {
@@ -857,54 +864,48 @@ public class Website {
     }
 
     private static void messageSellerList(BufferedReader reader, PrintWriter writer) throws IOException {
+        writer.write("messageSellerList");
+        writer.println();
+        writer.flush();
+                
         User reciever = null;
         ArrayList<Store> stores = new ArrayList<Store>();
-        ArrayList<Seller> sellers = listOfSellers();
+        ArrayList<Seller> sellers = listOfSellers(reader, writer);
 
-        try {
-            BufferedReader readerB = new BufferedReader(new FileReader("stores.txt"));
-            
-            String line;
-            try {
-                while ((line = readerB.readLine()) != null) {
-                    String[] tokens = line.split(",");
+        int storeSize = Integer.parseInt(reader.readLine());
 
-                    stores.add(new Store(tokens[0], tokens[1], tokens[2], tokens[3]));
-                }
-            } catch (IOException e) {
-                //   Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            System.out.println("The following is a list of Stores that you can contact: ");
-            for (int i = 0; i < stores.size(); i++) {
-                System.out.println((i + 1) + ": " + stores.get(i).getStoreName());
-            }
-            int choice = 0;
-            do {
-                System.out.println("Please enter the number of a store:");
-                choice = scanner.nextInt();
-                scanner.nextLine();
-            } while (!(choice >= 1 && choice <= stores.size()));
-
-            String storeSellerName = stores.get(choice - 1).getOwnerUsername();
-
-            for (int i = 0; i < sellers.size(); i++) {
-                if (sellers.get(i).getName().equals(storeSellerName)) {
-                    reciever = sellers.get(i);
-                    break;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            //   Auto-generated catch block
-            e.printStackTrace();
+        for (int i = 0; i < storeSize; i++) {
+            String[] tokens = reader.readLine().split(",");
+            stores.add(new Store(tokens[0], tokens[1], tokens[2], tokens[3]));
         }
+        
+
+        System.out.println("The following is a list of Stores that you can contact: ");
+        for (int i = 0; i < stores.size(); i++) {
+            System.out.println((i + 1) + ": " + stores.get(i).getStoreName());
+        }
+        int choice = 0;
+        do {
+            System.out.println("Please enter the number of a store:");
+            choice = scanner.nextInt();
+            scanner.nextLine();
+        } while (!(choice >= 1 && choice <= stores.size()));
+
+        String storeSellerName = stores.get(choice - 1).getOwnerUsername();
+
+        for (int i = 0; i < sellers.size(); i++) {
+            if (sellers.get(i).getName().equals(storeSellerName)) {
+                reciever = sellers.get(i);
+                break;
+            }
+        }
+    
         messageMenu(reader, writer, reciever);
 
     }
 
     private static void messageSellerSearch(BufferedReader reader, PrintWriter writer) throws IOException {
-        ArrayList<Seller> sellers = listOfSellers();
+        ArrayList<Seller> sellers = listOfSellers(reader, writer);
         String searchSeller;
         boolean found = false;
         Seller foundSell = null;
@@ -960,47 +961,34 @@ public class Website {
         } while (!found);
     }
 
-    public static ArrayList<Seller> listOfSellers() {
+    public static ArrayList<Seller> listOfSellers(BufferedReader reader, PrintWriter writer) throws IOException {
         //  method that loads sellers arraylist with list of sellers from user.txt
+        writer.write("listOfSellers");
+        writer.println();
+        writer.flush();
+
+        String sizeSTR = reader.readLine();
+        int size = Integer.parseInt(sizeSTR);
+        
         ArrayList<Seller> sellers = new ArrayList<>();
-        File f = new File("user.txt");
-        FileReader fr = null;
-        BufferedReader br = null;
-        try {
-            fr = new FileReader(f);
-            br = new BufferedReader(fr);
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                String[] part = line.split(",");
-                String userType = part[0];
-                if (userType.equals("seller")) {
-                    String userName = part[1];
-                    String password = part[2];
-                    String name = part[3].toLowerCase();
-                    int numMessages = Integer.parseInt(part[4]);
-                    int phoneNum = Integer.parseInt(part[5]);
-                    String address = part[6];
-                    Seller seller = new Seller(userName, password, name, numMessages, phoneNum, address);
-                    sellers.add(seller);
-                }
-            }
-            return sellers; // need to change
-        } catch (FileNotFoundException e) {
-            return null;
-        } catch (Exception e) {
-            return null;
-        } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-                if (fr != null) {
-                    fr.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+
+        if (size != -1 && size != -2) {
+            for (int i = 0; i < size; i++) {
+                String[] tokens = reader.readLine().split(",");
+                String userName = tokens[0];
+                String password = tokens[1];
+                String name = tokens[2].toLowerCase();
+                int numMessages = Integer.parseInt(tokens[3]);
+                int phoneNum = Integer.parseInt(tokens[4]);
+                String address = tokens[5];
+                Seller seller = new Seller(userName, password, name, numMessages, phoneNum, address);
+                sellers.add(seller);
             }
         }
+
+
+        return sellers;
+
     }
 
     public static ArrayList<Customer> listofCustomers(BufferedReader reader, PrintWriter writer) throws IOException {

@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Reader;
 import java.net.Socket;
 import java.net.SocketException;
@@ -35,7 +36,6 @@ public class Website {
 
 
     public static void main(String[] args) {
-        //   implement method
 
         
         JOptionPane.showMessageDialog(null,"Welcome to the Seller Customer Interface!", "Seller-Customer Exchange", JOptionPane.PLAIN_MESSAGE);
@@ -51,13 +51,17 @@ public class Website {
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter writer = new PrintWriter(socket.getOutputStream());
             try {
-                printWelcomeMenu(reader, writer);
+                 printWelcomeMenu(scan);
             } catch (InvalidInputException e) {
                 System.out.println(e.getMessage());
             } catch (FileNotFoundException e) {
-                System.out.println("Incorrect File Error");
+                //System.out.println("Incorrect File Error");
+                JOptionPane.showMessageDialog(null, "Incorrect File Error",
+                        "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
-                System.out.println("IO Exception");
+                //System.out.println("IO Exception");
+                JOptionPane.showMessageDialog(null, "IO Exception",
+                        "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
             }
 
         } catch (SocketException e) {
@@ -66,19 +70,16 @@ public class Website {
             e.printStackTrace();
         } 
 
-        
-
         scanner.close();
     }
 
     public static void printWelcomeMenu(BufferedReader reader, PrintWriter writer) throws InvalidInputException, IOException {
 
-        System.out.println("Hello and Welcome to the Seller-Customer interface!");
-        System.out.println("Please select an option to begin:");
-        System.out.println("1. Login");
-        System.out.println("2. Create an account");
-        System.out.println("3. Quit");
-        int choice = Integer.parseInt(scanner.nextLine());
+
+        String stringChoice = JOptionPane.showInputDialog(null, "Hello and Welcome to the Seller-Customer interface!\nPlease select an option to begin:\n1. Login\n2. Create an account\n3. Quit",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+
+        int choice = Integer.parseInt(stringChoice);
 
         
 
@@ -91,7 +92,9 @@ public class Website {
                     writer.flush();
                     boolean success = login(reader, writer);
                     if (success) {
-                        System.out.println("You have successfully logged in!");
+                        //System.out.println("You have successfully logged in!");
+                        JOptionPane.showMessageDialog(null, "You have successfully logged in!",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
                         if (currentUser instanceof Customer) {
                             customerMenu(reader, writer);
                         }
@@ -100,7 +103,9 @@ public class Website {
                         }
                     }
                     if (!success) {
-                        System.out.println("Goodbye!");
+                        //System.out.println("Goodbye!");
+                        JOptionPane.showMessageDialog(null, "Goodbye!",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
                     }
                     break;
                 }
@@ -115,6 +120,9 @@ public class Website {
                 }
 
                 case 3: {
+
+                    JOptionPane.showMessageDialog(null, "Thanks for using the interface!",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
                     writer.write("quit");
                     writer.println();
                     writer.flush();
@@ -124,7 +132,8 @@ public class Website {
                 }
             }
         } else
-            throw new InvalidInputException("The choice entered was invalid!");
+            throw new InvalidInputException(JOptionPane.showInputDialog(null, "The choice entered was invalid!",
+            "Seller-Customer interface", JOptionPane.ERROR_MESSAGE));
     }
 
     public static boolean login(BufferedReader reader, PrintWriter writer) throws IOException {
@@ -132,8 +141,8 @@ public class Website {
         String password = null;
 
         while (true) {
-            System.out.print("Enter username (or -1 to quit): "); // @nathan
-            username = scanner.nextLine(); // @nathan
+            username = JOptionPane.showInputDialog(null, "Enter username (or -1 to quit): ",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
             writer.write(username);
             writer.println();
             writer.flush();
@@ -143,9 +152,8 @@ public class Website {
             }
             
 
-            System.out.print("Enter password: "); // @nathan
-            password = scanner.nextLine(); // @nathan
-
+            password = JOptionPane.showInputDialog(null, "Enter password: ",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
             writer.write(password);
             writer.println();
             writer.flush();
@@ -157,7 +165,8 @@ public class Website {
                 return true;
             }
 
-            System.out.println("Invalid username or password. Please try again.");
+            JOptionPane.showInputDialog(null, "Invalid username or password. Please try again.",
+            "Seller-Customer interface", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -176,34 +185,46 @@ public class Website {
     
     public static void createAccount(BufferedReader reader, PrintWriter writer) throws IOException {
         // Prompt the user to enter their username, name, password, and account type
-        System.out.print("Enter your full name: ");
-        String name = scanner.nextLine();
+        // System.out.print("Enter your full name: ");
+        // String name = scanner.nextLine();
+        String name = JOptionPane.showInputDialog(null, "Enter your full name: ",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
 
-        System.out.print("Enter your username: ");
-        String username = scanner.nextLine();
+        // System.out.print("Enter your username: ");
+        // String username = scanner.nextLine();
+        String username = JOptionPane.showInputDialog(null, "Enter your username: ",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
 
-        System.out.print("Enter your password: ");
-        String password = scanner.nextLine();
+        // System.out.print("Enter your password: ");
+        // String password = scanner.nextLine();
+        String password = JOptionPane.showInputDialog(null, "Enter your password: ",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
 
         String phoneNum;
         do {
-            System.out.print("Enter your phone number (10 Digit number): ");
-            phoneNum = scanner.nextLine();
+            // System.out.print("Enter your phone number (10 Digit number): ");
+            // phoneNum = scanner.nextLine();
+            phoneNum = JOptionPane.showInputDialog(null, "Enter your phone number (10 Digit number): ",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
         } while (phoneNum.length() != 10);
 
         String address;
         do {
-            System.out.print("Enter your address (no commas): ");
-            address = scanner.nextLine();
+            // System.out.print("Enter your address (no commas): ");
+            // address = scanner.nextLine();
+            address = JOptionPane.showInputDialog(null, "Enter your address (no commas): ",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
         } while (address.contains(","));
 
         String accountType;
         do {
-            System.out.print("Enter your account type (Seller or Customer): ");
-            accountType = scanner.nextLine().trim().toLowerCase();
+            accountType = JOptionPane.showInputDialog(null, "Enter your account type (Seller or Customer): ",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+                    accountType = accountType.trim().toLowerCase();
         } while (!accountType.equals("seller") && !accountType.equals("customer"));
 
 
+            
         writer.write(name + "," + username + "," + password + "," + phoneNum + "," + address + "," + accountType);
         writer.println();
         writer.flush();
@@ -213,11 +234,18 @@ public class Website {
         if (result.equals("created")) {
             if (accountType.equals("seller")) {
                 currentUser = new Seller(username, password, name, 0, Integer.parseInt(phoneNum), address);
+                JOptionPane.showMessageDialog(null, "User created! You are now logged in",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);  
                 sellerMenu(reader, writer);
+                
             } else if (accountType.equals("customer")) {
                 currentUser = new Customer(username, password, name, 0, Integer.parseInt(phoneNum), address);
+                JOptionPane.showMessageDialog(null, "User created! You are now logged in",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
                 customerMenu(reader, writer);
+                
             }
+
         } else if (result.equals("error")) {
             // add error opening file JOPtionPane Message
         }
@@ -225,20 +253,10 @@ public class Website {
        
     }
 
-    public static void sellerMenu(BufferedReader reader, PrintWriter writer) throws IOException {
-        int choice;
-        System.out.println("Welcome Seller " + currentUser.getName() + "!");
-        System.out.println("Please Select an action:  ");
-        System.out.println("1. Message Customer from search");
-        System.out.println("2. Message Customer from list");
-        System.out.println("3. Create Store");
-        System.out.println("4. Block User");
-        System.out.println("5. Ghost User (set Invisible)");
-        System.out.println("6. Modify User");
-        System.out.println("7. Delete Account");
-        System.out.println("8. Logout");
-        choice = scanner.nextInt();
-        scanner.nextLine();
+       public static void sellerMenu(BufferedReader reader, PrintWriter writer) throws IOException {
+        String stringChoice = JOptionPane.showInputDialog(null, "Welcome Seller " + currentUser.getName() + "!\nPlease Select an action:  \n1. Message Customer from search\n2. Message Customer from list\n3. Create Store\n4. Block User\n5. Ghost User (set Invisible)\n6. Modify User\n7. Delete Account\n8. Logout",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+        int choice = Integer.parseInt(stringChoice);
 
         switch (choice) {
             case 1:
@@ -271,12 +289,15 @@ public class Website {
                 break;
 
             case 8:
-                System.out.println("Logging out...");
+                //System.out.println("Logging out...");
+                JOptionPane.showMessageDialog(null, "Logging out...",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
                 currentUser = null;
                 break;
 
             default:
-                System.out.println("That's not a valid choice. Reloading menu...");
+                JOptionPane.showMessageDialog(null, "That's not a valid choice. Reloading menu...",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
                 sellerMenu(reader, writer);
                 break;
         }
@@ -285,9 +306,14 @@ public class Website {
 
     
 
+
+   
     private static void deleteUser(BufferedReader reader, PrintWriter writer) throws IOException {
-        System.out.println("ARE YOU SURE YOU WANT TO DELETE ACCOUNT? (Y/N)");
-        String choice = scanner.nextLine().toLowerCase();
+        
+        // System.out.println("ARE YOU SURE YOU WANT TO DELETE ACCOUNT? (Y/N)");
+        // String choice = scan.nextLine().toLowerCase();
+        String choice = JOptionPane.showInputDialog(null, "ARE YOU SURE YOU WANT TO DELETE ACCOUNT? (Y/N)",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
 
         if (choice.equals("y")) {
             writer.write("deleteUser");
@@ -297,9 +323,9 @@ public class Website {
             writer.write(currentUser.name);
             writer.println();
             writer.flush();
-
-            System.out.println("File successfully updated.");
-            System.out.println("Goodbye!");
+                
+            JOptionPane.showMessageDialog(null, "Goodbye!",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
         } else {
             if (currentUser instanceof Seller) {
                 sellerMenu(reader, writer);
@@ -321,8 +347,11 @@ public class Website {
     }
 
     private static void setInvisible(BufferedReader reader, PrintWriter writer) throws IOException {
-        System.out.println("Please enter the name of the User you would like to set yourself invisible for:");
-        String name = scanner.nextLine().toLowerCase();
+        // System.out.println("Please enter the name of the User you would like to set yourself invisible for:");
+        // String name = scan.nextLine().toLowerCase();
+        String name = JOptionPane.showInputDialog(null, "Please enter the name of the User you would like to set yourself invisible for:",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+        name = name.toLowerCase();
 
         if (currentUser instanceof Customer) {
             ArrayList<Seller> sellers = listOfSellers(reader, writer);
@@ -335,10 +364,15 @@ public class Website {
                         PrintWriter pw = new PrintWriter(fw);
                         pw.println(currentUser.getName() + "," + name);
                         pw.close();
-                        System.out.println("The user can no longer see you.");
+                        //System.out.println("The user can no longer see you.");
+                        JOptionPane.showMessageDialog(null, "The user can no longer see you.",
+                            "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
                     } catch (IOException e) {
                         //   Auto-generated catch block
-                        e.printStackTrace();
+                        //e.printStackTrace();
+                        StringWriter stackTraceOutput = new StringWriter();
+                        e.printStackTrace(new PrintWriter(stackTraceOutput));
+                        JOptionPane.showMessageDialog(null, stackTraceOutput.toString());
                     }
                 }
             }
@@ -355,10 +389,15 @@ public class Website {
                         PrintWriter pw = new PrintWriter(fw);
                         pw.println(currentUser.getName() + "," + name);
                         pw.close();
-                        System.out.println("The user can no longer see you.");
+                        //System.out.println("The user can no longer see you.");
+                        JOptionPane.showMessageDialog(null, "The user can no longer see you.",
+                            "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
                     } catch (IOException e) {
                         //   Auto-generated catch block
-                        e.printStackTrace();
+                        //e.printStackTrace();
+                        StringWriter stackTraceOutput = new StringWriter();
+                        e.printStackTrace(new PrintWriter(stackTraceOutput));
+                        JOptionPane.showMessageDialog(null, stackTraceOutput.toString());
                     }
                 }
             }
@@ -366,9 +405,11 @@ public class Website {
         }
     }
 
+
     private static void blockUser(BufferedReader reader, PrintWriter writer) throws IOException {
-        System.out.println("Please enter the name of the User you would like to block:");
-        String name = scanner.nextLine().toLowerCase();
+        String name = JOptionPane.showInputDialog(null, "Please enter the name of the User you would like to block:",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+        name = name.toLowerCase();
 
         writer.write("blockUser");
         writer.println();
@@ -393,6 +434,7 @@ public class Website {
             writer.flush();
 
             for (int i = 0; i < sellers.size(); i++) {
+
                 writer.write(sellers.get(i).toString());
                 writer.println();
                 writer.flush();
@@ -437,8 +479,6 @@ public class Website {
        writer.flush();
 
        return Boolean.parseBoolean(reader.readLine());
-
-
     }
 
     private static boolean hasBlockedYou(BufferedReader reader, PrintWriter writer, String otherName) throws IOException {
@@ -458,12 +498,13 @@ public class Website {
     }
 
     private static void createStore(BufferedReader reader, PrintWriter writer) throws IOException {
-        System.out.print("Enter store name: ");
-        String name = scanner.nextLine();
-        System.out.print("Enter store type (restauraunt, grocery store, etc.): ");
-        String type = scanner.nextLine();
-        System.out.print("Enter store address (no commas): ");
-        String address = scanner.nextLine();
+        String name = JOptionPane.showInputDialog(null, "Enter store name: ",
+            "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+        String type = JOptionPane.showInputDialog(null, "Enter store type (restauraunt, grocery store, etc.): ",
+            "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+        String address = JOptionPane.showInputDialog(null, "Enter store address (no commas): ",
+            "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+        
 
         writer.write("createStore");
         writer.println();
@@ -489,28 +530,29 @@ public class Website {
         User reciever;
         ArrayList<Customer> customers = listofCustomers(reader, writer);
 
-        System.out.println("The following is a list of customers that you can message: ");
+        String outputString = "The following is a list of customers that you can message: ";
         for (int i = 0; i < customers.size(); i++) {
-            if (!isInvisibleToYou(reader, writer, customers.get(i).getName())) {
-                System.out.println((i + 1) + ": " + customers.get(i).getName());
-            } else {
-                System.out.println((i + 1) + ": INVISIBLE");
-            }
+            outputString = outputString + (i + 1) + ": " + customers.get(i).getName();
         }
+        JOptionPane.showMessageDialog(null, outputString,
+                "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
+
         int choice = 0;
         do {
-            System.out.println("Please enter the number of a customer:");
-            choice = scanner.nextInt();
-            scanner.nextLine();
+            String stringChoice = JOptionPane.showInputDialog(null, "Please enter the number of a customer:",
+            "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+            choice = Integer.parseInt(stringChoice);
         } while (!(choice >= 1 && choice <= customers.size()));
 
         reciever = customers.get(choice - 1);
         
         if (isInvisibleToYou(reader, writer, reciever.getName())) {
-            System.out.println("That user is invisible to you! Please select another customer.");
+            JOptionPane.showMessageDialog(null, "That user is Invisible to you!",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
             messageCustomerList(reader, writer);
         } else if (hasBlockedYou(reader, writer, reciever.getName())) {
-            System.out.println("That user has blocked you! Please select another customer.");
+            JOptionPane.showMessageDialog(null, "That user has blocked you!,
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
             messageCustomerList(reader, writer);
         } else {
             messageMenu(reader, writer, reciever);
@@ -526,8 +568,8 @@ public class Website {
         boolean blocked = false;
 
         do {
-            System.out.print("Enter the name of the customer to search for: ");
-            searchCustomer = scanner.nextLine();
+            searchCustomer = JOptionPane.showInputDialog(null, "Enter the name of the customer to search for: ",
+            "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
 
             for (Customer customer : customers) {
                 if (customer.getName().equalsIgnoreCase(searchCustomer)) {
@@ -550,12 +592,16 @@ public class Website {
 
             if (!found) {
                 if (!blocked) {
-                    System.out.println("Customer " + searchCustomer + " could not be found.");
+                    JOptionPane.showMessageDialog(null, "Customer " + searchCustomer + " could not be found.",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);  
                 } else {
-                    System.out.println("Customer " + searchCustomer + " has blocked you!");
+                    JOptionPane.showMessageDialog(null, "Customer " + searchCustomer + " has blocked you.",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);  
                 }
-                System.out.println("Enter 1 to search again, or 2 to quit to main menu: ");
-                int choice = Integer.parseInt(scanner.nextLine());
+                
+                String stringChoice = JOptionPane.showInputDialog(null, "Enter 1 to search again, or 2 to quit to main menu: ",
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+                int choice = Integer.parseInt(stringChoice);
 
                 if (choice == 2) {
                     customerMenu(reader, writer);
@@ -569,6 +615,8 @@ public class Website {
                     messageMenu(reader, writer, foundCust);
                 } else {
                     System.out.println("There was an error with the customer search.");
+                    JOptionPane.showMessageDialog(null, "There was an error with the customer search.",
+                        "Seller-Customer interface", JOptionPane.ERROR_MESSAGE);
                 }
             } 
 
@@ -581,17 +629,8 @@ public class Website {
         boolean quit = false;
 
         while (!quit) {
-            // print the menu options
-            System.out.println("Please select an option:");
-            System.out.println("1. Send a new message");
-            System.out.println("2. View message history");
-            System.out.println("3. Edit a message");
-            System.out.println("4. Delete a message");
-            System.out.println("0. Main Menu");
-
-            // read user input
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // consume the newline character
+            String stringChoice = JOptionPane.showInputDialog(null, "Please select an option:\n1. Send a new message\n2. View message history\n3. Edit a message\n4. Delete a message\n0. Main Menu", "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+            int choice = Integer.parseInt(stringChoice);
 
             switch (choice) {
                 case 0:
@@ -615,7 +654,9 @@ public class Website {
                     deleteMessage(reader, writer, reciever);
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    //System.out.println("Invalid choice. Please try again.");
+                    JOptionPane.showMessageDialog(null, "Invalid choice. Please try again.",
+                        "Seller-Customer interface", JOptionPane.ERROR_MESSAGE);
                     break;
             }
         }
@@ -624,7 +665,8 @@ public class Website {
     }
 
     private static void deleteMessage(BufferedReader reader, PrintWriter writer, User reciever) throws IOException { //NET IO AFTER MERGE
-        System.out.println("You selected: Delete a message");
+        JOptionPane.showMessageDialog(null, "You selected: Delete a message",
+            "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
         try {
             BufferedReader readerB = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
                 reciever.getName())));
@@ -632,24 +674,30 @@ public class Website {
             readerB.close();
             int count = 1;
 
-            System.out.println("Messages:");
+            //System.out.println("Messages:");
+            String outputString = "Messages:";
             for (int i = 0; i < lines.length; i++) {
                 String[] tokens = lines[i].split(",");
                 if (tokens[1].equals(currentUser.getName())) {
-                    System.out.print((count) + ": " + tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
+                    //System.out.print((count) + ": " + tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
+                    outputString += ((count) + ": " + tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
                     if (tokens[3].equals("true")) {
-                        System.out.println(" (edited)");
+                        //System.out.println(" (edited)");
+                        outputString += " (edited)";
                     } else {
-                        System.out.println();
+                        //System.out.println();
+                        outputString += "\n";
                     }
                     count++;
+                    JOptionPane.showMessageDialog(null, outputString,
+                        "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
 
             int lineNumber;
-            System.out.println("Enter the number of the message you would like to delete:");
-            lineNumber = scanner.nextInt();
-            scanner.nextLine();
+           String stringLineNumber = JOptionPane.showInputDialog(null, "Enter the number of the message you would like to delete:", 
+                "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+            lineNumber = Integer.parseInt(stringLineNumber);
 
             int count2 = 1;
             for (int i = 0; i < lines.length; i++) {
@@ -684,17 +732,25 @@ public class Website {
             }   
             writerB.close();
             
-            System.out.println("File successfully updated.");
+            //System.out.println("File successfully updated.");
+            JOptionPane.showMessageDialog(null, "File successfully updated.",
+                "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
+
         } catch (FileNotFoundException e) {
-            System.out.println("The conversation does not exist!");
+            JOptionPane.showMessageDialog(null, "The conversation does not exist!",
+                "Seller-Customer interface", JOptionPane.ERROR_MESSAGE);
             messageMenu(reader, writer, reciever);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            StringWriter stackTraceOutput = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTraceOutput));
+            JOptionPane.showMessageDialog(null, stackTraceOutput.toString());
         }
     }
 
     private static void editMessage(BufferedReader reader, PrintWriter writer, User reciever) throws IOException {  //NET IO AFTER MERGE
-        System.out.println("You selected: Edit a message");
+        JOptionPane.showMessageDialog(null, "You selected: Edit a message",
+                "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
         try {
             BufferedReader readerB = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
                 reciever.getName())));
@@ -702,24 +758,31 @@ public class Website {
             readerB.close();
             int count = 1;
 
-            System.out.println("Messages:");
+            //System.out.println("Messages:");
+            String outputString = "Messages:";
             for (int i = 0; i < lines.length; i++) {
                 String[] tokens = lines[i].split(",");
                 if (tokens[1].equals(currentUser.getName())) {
-                    System.out.print((count) + ": " + tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
+                    //System.out.print((count) + ": " + tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
+                    outputString += ((count) + ": " + tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
                     if (tokens[3].equals("true")) {
-                        System.out.println(" (edited)");
+                        //System.out.println(" (edited)");
+                        outputString += " (edited)";
                     } else {
-                        System.out.println();
+                        //System.out.println();
+                        outputString += "\n";
                     }
                     count++;
+                    JOptionPane.showMessageDialog(null, outputString,
+                        "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
 
             int lineNumber;
-            System.out.println("Enter the number of the message you would like to change:");
-            lineNumber = scanner.nextInt();
-            scanner.nextLine();
+
+            String stringLineNumber = JOptionPane.showInputDialog(null, "Enter the number of the message you would like to change:", 
+                "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+            lineNumber = Integer.parseInt(stringLineNumber);
 
             int count2 = 1;
             for (int i = 0; i < lines.length; i++) {
@@ -733,8 +796,9 @@ public class Website {
                 }
             }
             
-            System.out.printf("Enter the new content for line %d:%n", count2);
-            String newLineContent = scanner.nextLine();
+
+            String newLineContent = JOptionPane.showInputDialog(null, "Enter the new content for line " + ":" + count2 + "\n", 
+                "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
             
             lines[lineNumber - 1] = newLineContent + "," + currentUser.getName() + "," 
                 + new Date().toString() + "," + true;
@@ -746,44 +810,67 @@ public class Website {
             }
             writerB.close();
             
-            System.out.println("File successfully updated.");
+            //System.out.println("File successfully updated.");
+            JOptionPane.showMessageDialog(null, "File successfully updated.",
+                "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
         } catch (FileNotFoundException e) {
-            System.out.println("The conversation does not exist!");
-            messageMenu(reader, writer, reciever);
+            JOptionPane.showMessageDialog(null, "The conversation does not exist!",
+                "Seller-Customer interface", JOptionPane.ERROR_MESSAGE);
+            messageMenu(scan, reciever);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            StringWriter stackTraceOutput = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTraceOutput));
+            JOptionPane.showMessageDialog(null, stackTraceOutput.toString());
         }
         
     }
 
+
     private static void viewMessageHistory(BufferedReader reader, PrintWriter writer, User reciever) { //NET IO AFTER MERGE
-        System.out.println("You selected: View message history");
+        
+        JOptionPane.showMessageDialog(null, "You selected: View message history",
+                "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
         try {
             BufferedReader readerB = new BufferedReader(new FileReader(convoNamingScheme(currentUser.getName(),
                 reciever.getName())));
             String line;
-            while ((line = readerB.readLine()) != null) {
+            String outputString = "";
+            while ((line = reader.readLine()) != null) {
                 String[] tokens = line.split(",");
-                System.out.print(tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
+                //System.out.print(tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
+                outputString += (tokens[2] + " | " + tokens[1] + ": " + tokens[0]);
                 if (tokens[3].equals("true")) {
-                    System.out.println(" (edited)");
+                    //System.out.println(" (edited)");
+                    outputString += " (edited)";
                 } else {
-                    System.out.println();
+                    //System.out.println();
+                    outputString += "\n";
                 }
             }
+            JOptionPane.showMessageDialog(null, outputString,
+                        "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
+
         } catch (FileNotFoundException e) {
-            System.out.println("The conversation does not exist! Please send a message to see the history.");
+            //System.out.println("The conversation does not exist! Please send a message to see the history.");
+            JOptionPane.showMessageDialog(null, "The conversation does not exist! Please send a message to see the history.",
+                "Seller-Customer interface", JOptionPane.ERROR_MESSAGE);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            StringWriter stackTraceOutput = new StringWriter();
+            e.printStackTrace(new PrintWriter(stackTraceOutput));
+            JOptionPane.showMessageDialog(null, stackTraceOutput.toString());
         }
         System.out.println("Press enter to continue");
         scanner.nextLine();
     }
 
+
     private static void sendNewMessage(BufferedReader reader, PrintWriter writer, User reciever) throws NumberFormatException, IOException {
-        System.out.println("You selected: Send a new message");
-        System.out.println("Enter the message you would like to send to " + reciever.getName() + ": ");
-        String messageStr = scanner.nextLine();
+        JOptionPane.showMessageDialog(null, "You selected: View message history",
+                "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
+        String messageStr = JOptionPane.showInputDialog(null, "Enter the message you would like to send to " + reciever.getName() + ": ", 
+                "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
         Message message = new Message(messageStr, currentUser, reciever, new Date().toString());
 
         writer.write("sendNewMessage");
@@ -805,7 +892,8 @@ public class Website {
         int complete = Integer.parseInt(reader.readLine());
         
         if (complete == 200) {
-            System.out.println("Message Sent!");
+            JOptionPane.showMessageDialog(null, "Message Sent!",
+                "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
         }
 
 
@@ -813,17 +901,9 @@ public class Website {
 
     public static void customerMenu(BufferedReader reader, PrintWriter writer) throws IOException {
         int choice;
-        System.out.println("Welcome Customer " + currentUser.getName() + "!");
-        System.out.println("Please Select an action: ");
-        System.out.println("1. Message Seller from search");
-        System.out.println("2. Message Seller from list of Stores");
-        System.out.println("3. Block User");
-        System.out.println("4. Ghost User (set Invisible)");
-        System.out.println("5. Modify User");
-        System.out.println("6. Delete User");
-        System.out.println("7. Logout");
-        choice = scanner.nextInt();
-        scanner.nextLine();
+        String stringChoice = JOptionPane.showInputDialog(null, "Welcome Customer " + currentUser.getName() + "!\nPlease Select an action: \n1. Message Seller from search\n2. Message Seller from list of Stores\n3. Block User\n4. Ghost User (set Invisible)\n5. Modify User\n6. Delete User\n7. Logout\n", 
+                "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+        choice = Integer.parseInt(stringChoice);
 
         
         switch (choice) {
@@ -852,13 +932,16 @@ public class Website {
                 break;
 
             case 7:
-                System.out.println("Logging out...");
+                //System.out.println("Logging out...");
+                JOptionPane.showMessageDialog(null, "Logging out...",
+                "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
                 currentUser = null;
                 break;
 
             default:
-                System.out.println("That's not a valid choice. Reloading menu...");
-                customerMenu(reader, writer);
+                JOptionPane.showMessageDialog(null, "That's not a valid choice. Reloading menu...",
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
+                customerMenu(scan);
                 break;
         }
     }
@@ -874,23 +957,27 @@ public class Website {
 
         int storeSize = Integer.parseInt(reader.readLine());
 
+
         for (int i = 0; i < storeSize; i++) {
             String[] tokens = reader.readLine().split(",");
             stores.add(new Store(tokens[0], tokens[1], tokens[2], tokens[3]));
         }
         
 
-        System.out.println("The following is a list of Stores that you can contact: ");
-        for (int i = 0; i < stores.size(); i++) {
-            System.out.println((i + 1) + ": " + stores.get(i).getStoreName());
-        }
+        String outputString = "The following is a list of Stores that you can contact: \n";
+            for (int i = 0; i < stores.size(); i++) {
+                //System.out.println((i + 1) + ": " + stores.get(i).getStoreName());
+                outputString += ((i + 1) + ": " + stores.get(i).getStoreName()) + "\n";
+            }
+            JOptionPane.showMessageDialog(null, outputString,
+                    "Seller-Customer interface", JOptionPane.INFORMATION_MESSAGE);
+
         int choice = 0;
         do {
-            System.out.println("Please enter the number of a store:");
-            choice = scanner.nextInt();
-            scanner.nextLine();
+           String stringChoice = JOptionPane.showInputDialog(null, "Please enter the number of a store:", 
+                "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+                choice = Integer.parseInt(stringChoice);
         } while (!(choice >= 1 && choice <= stores.size()));
-
         String storeSellerName = stores.get(choice - 1).getOwnerUsername();
 
         for (int i = 0; i < sellers.size(); i++) {
@@ -912,8 +999,8 @@ public class Website {
         boolean blocked = false;
 
         do {
-            System.out.print("Enter the name of the Sellers to search for: ");
-            searchSeller = scanner.nextLine();
+            searchSeller = JOptionPane.showInputDialog(null, "Enter the name of the Sellers to search for: ", 
+                "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
 
             for (Seller seller : sellers) {
                 if (seller.getName().equalsIgnoreCase(searchSeller)) {
@@ -935,14 +1022,16 @@ public class Website {
 
             if (!found) {
                 if (!blocked) {
-                    System.out.println("Seller " + searchSeller + " could not be found.");
+                     JOptionPane.showMessageDialog(null, "Seller " + searchSeller + " could not be found.",
+                    "Seller-Customer interface", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    System.out.println("Seller " + searchSeller + " has blocked you!" );
+                     JOptionPane.showMessageDialog(null, "Seller " + searchSeller + " has blocked you.",
+                    "Seller-Customer interface", JOptionPane.ERROR_MESSAGE);
                 }
 
-                System.out.println("Enter 1 to search again, or 2 to quit to main menu: ");
-                int choice = scanner.nextInt();
-                scanner.nextLine();
+                 String stringChoice = JOptionPane.showInputDialog(null, "Enter 1 to search again, or 2 to quit to main menu: ", 
+                    "Seller-Customer interface", JOptionPane.QUESTION_MESSAGE);
+                int choice = Integer.parseInt(stringChoice);
 
                 if (choice == 2) {
                     messageSellerSearch(reader, writer);
@@ -954,7 +1043,9 @@ public class Website {
                 if (foundSell != null) {
                     messageMenu(reader, writer, foundSell);
                 } else {
-                    System.out.println("There was an error with the Seller search.");
+                    //System.out.println("There was an error with the Seller search.");
+                    JOptionPane.showMessageDialog(null, "There was an error with the Seller search.",
+                        "Seller-Customer interface", JOptionPane.ERROR_MESSAGE);
                 }
             } 
 
@@ -971,6 +1062,7 @@ public class Website {
         int size = Integer.parseInt(sizeSTR);
         
         ArrayList<Seller> sellers = new ArrayList<>();
+
 
         if (size != -1 && size != -2) {
             for (int i = 0; i < size; i++) {
@@ -1000,6 +1092,7 @@ public class Website {
         int size = Integer.parseInt(sizeSTR);
         
         ArrayList<Customer> customers = new ArrayList<>();
+
 
         if (size != -1 && size != -2) {
             for (int i = 0; i < size; i++) {

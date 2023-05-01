@@ -1,2 +1,3 @@
 bob,Store,Builder,no address
 John Tom,Store,restaurant,800
+bob,a new store,retail,urmomLane

@@ -5,3 +5,4 @@ seller,username,password,Name,0,0123456789,100
 customer,username2,password,Name2,0,0123456789,200
 seller,computer,computer,Com Puter,0,0123456789,600
 seller,JT,password,John Tom,0,0123456789,700
+seller,adaryani,pass,Ameesh Daryabu,0,1234567890,500 messian pl
